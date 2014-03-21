@@ -1,0 +1,19 @@
+Ward Type Code,Description
+A,Private Day Surgery
+B,Subsidy Day Surgery
+C,Private Ward
+D,A Ward Type
+E,B1 Ward Type
+F,B2+ Ward Type
+G,B2 Ward Type
+H,C Ward Type
+I,Private ICU
+J,ICU A Ward Type
+K,ICU B1 Ward Type
+L,ICU B2 Ward Type
+M,ICU B2+ Ward Type
+N,ICU C Ward Type
+O,Short Stay Ward
+P,Private Short Stay Ward
+Z,Day Surgery (Dummy)
+8,Special Ward Type
