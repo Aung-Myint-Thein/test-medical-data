@@ -1,6 +1,15 @@
+## import the bills data
 bills <- read.csv("data/1 Core Data/Hospital Bills Final Set.csv")
-
 bills <- bills[!is.na(bills$HOSPITALBILL), ]
+bills[, "AGE"] <- 2014 - bills[, "yyyy"]
+
+WardType <- read.csv("data/1 Core Data/Reference - WardType.csv")
+
+
+## exploraton for age
+summary(bills$AGE)
+boxplot(bills$AGE)
+barplot(table(bills$AGE))
 
 hist(bills[bills$HOSPITALBILL < 2000, "HOSPITALBILL"])
 
