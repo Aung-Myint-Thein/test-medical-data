@@ -86,8 +86,17 @@ plot(table(predict$AGE))
 ## order the data
 trainD <- bills[order(bills$ID, bills$yyyy, bills$HRN, bills$DATEOFADM, bills$DATEDISCHARGE, bills$BILLCAT, bills$WARDTYPE),]
 
-onlyBILLCAT  <- bills[bills[,"BILLCAT"] != "", "HRN"]
-onlyWARDTYPE <- bills[bills[,"WARDTYPE"] != "", "HRN"]
-bothBILLCATWARDTYPE <- bills[bills[,"BILLCAT"] != "" & bills[,"WARDTYPE"] != "", "HRN"]
+onlyBILLCAT  <- bills[bills[,"BILLCAT"] != "", c(1,4,10,11)]
+onlyWARDTYPE <- bills[bills[,"WARDTYPE"] != "", c(1,4,10,11)]
+bothBILLCATWARDTYPE <- bills[bills[,"BILLCAT"] != "" & bills[,"WARDTYPE"] != "", c(1,4,10,11)]
+neiBILLCATWARDTYPE  <- bills[bills[,"BILLCAT"] == "" & bills[,"WARDTYPE"] == "", c(1,4,10,11)]
 
-unique <- union(union(onlyBILLCAT, onlyWARDTYPE), bothBILLCATWARDTYPE)
+unique <- union(union(union(onlyWARDTYPE, bothBILLCATWARDTYPE), onlyBILLCAT), neiBILLCATWARDTYPE)
+
+## starting to test the regression
+
+trainData <- aggregate(HOSPITALBILL ~ ID + AGE + GENDER + HRN + HOSPITAL + DIAGNOSUS + BILLCAT + DURATIONOFSTAY, bills, mean)
+trainData <- trainData[order(trainData$HRN),]
+
+
+lm1 <- lm(HOSPITALBILL ~ ID + AGE + GENDER + HRN + HOSPITAL + DIAGNOSUS + BILLCAT + DURATIONOFSTAY, data=trainData)
