@@ -12,7 +12,6 @@ predict[, "DURATIONOFSTAY"] <- as.numeric(difftime(as.Date(predict[, "DATEDISCHA
 
 WardType <- read.csv("data/1 Core Data/Reference - WardType.csv")
 
-
 trainDataDiagnosis <- tolower(unique(bills$DIAGNOSUS))
 predictDataDiagnosis <- tolower(unique(predict$DIAGNOSUS))
 
@@ -55,6 +54,7 @@ bills4 <- aggregate(HOSPITALBILL ~ ID + HRN + GENDER + BILLCAT + DIAGNOSUS + AGE
 bills4 <- bills4[order(bills4$HRN),]
 
 bills5 <- aggregate(HOSPITALBILL ~ ID + AGE + GENDER + HRN + HOSPITAL + DIAGNOSUS + BILLCAT , bills, sum)
+bills5 <- bills5[order(bills5$HRN),]
 
 tb <- bills[1:12, ]
 
@@ -73,3 +73,21 @@ bills2[table(bills3[,2]) > 1,]
 ndates1 <- difftime(as.Date(bills[, "DATEDISCHARGE"], "%d/%m/%Y"),as.Date(bills[, "DATEOFADM"], "%d/%m/%Y"), units="auto")
 head(ndates1)
 ndates1[1]- ndates1[2]
+
+plot(table(bills$DURATIONOFSTAY))
+
+plot(table(predict$DURATIONOFSTAY))
+
+plot(table(bills$AGE))
+
+plot(table(predict$AGE))
+
+
+## order the data
+trainD <- bills[order(bills$ID, bills$yyyy, bills$HRN, bills$DATEOFADM, bills$DATEDISCHARGE, bills$BILLCAT, bills$WARDTYPE),]
+
+onlyBILLCAT  <- bills[bills[,"BILLCAT"] != "", "HRN"]
+onlyWARDTYPE <- bills[bills[,"WARDTYPE"] != "", "HRN"]
+bothBILLCATWARDTYPE <- bills[bills[,"BILLCAT"] != "" & bills[,"WARDTYPE"] != "", "HRN"]
+
+unique <- union(union(onlyBILLCAT, onlyWARDTYPE), bothBILLCATWARDTYPE)
