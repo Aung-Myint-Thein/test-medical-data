@@ -1,11 +1,23 @@
 ## import the bills data
 bills <- read.csv("data/1 Core Data/Hospital Bills Final Set.csv")
+predict <- read.csv("data/1 Core Data/201403131839-Prudential_Submissions.csv")
+
 bills <- bills[!is.na(bills$HOSPITALBILL), ]
+
 bills[, "AGE"] <- 2014 - bills[, "yyyy"]
+predict[, "AGE"] <- 2014 - as.numeric(substr(as.character(predict[, "YMDOB"]), 1, 4))
+
 bills[, "DURATIONOFSTAY"] <- as.numeric(difftime(as.Date(bills[, "DATEDISCHARGE"], "%d/%m/%Y"), as.Date(bills[, "DATEOFADM"], "%d/%m/%Y"), units="days"))
+predict[, "DURATIONOFSTAY"] <- as.numeric(difftime(as.Date(predict[, "DATEDISCHARGE"], "%d/%m/%Y"), as.Date(predict[, "DATEOFADM"], "%d/%m/%Y"), units="days"))
 
 WardType <- read.csv("data/1 Core Data/Reference - WardType.csv")
 
+
+trainDataDiagnosis <- tolower(unique(bills$DIAGNOSUS))
+predictDataDiagnosis <- tolower(unique(predict$DIAGNOSUS))
+
+setdiff(predictDataDiagnosis, trainDataDiagnosis)
+setdiff(trainDataDiagnosis, predictDataDiagnosis)
 
 ## exploraton for age
 summary(bills$AGE)
