@@ -10,6 +10,8 @@ predict[, "AGE"] <- 2014 - as.numeric(substr(as.character(predict[, "YMDOB"]), 1
 bills[, "DURATIONOFSTAY"] <- as.numeric(difftime(as.Date(bills[, "DATEDISCHARGE"], "%d/%m/%Y"), as.Date(bills[, "DATEOFADM"], "%d/%m/%Y"), units="days"))
 predict[, "DURATIONOFSTAY"] <- as.numeric(difftime(as.Date(predict[, "DATEDISCHARGE"], "%d/%m/%Y"), as.Date(predict[, "DATEOFADM"], "%d/%m/%Y"), units="days"))
 
+bills <- bills[order(bills$HRN),]
+
 WardType <- read.csv("data/1 Core Data/Reference - WardType.csv")
 
 trainDataDiagnosis <- tolower(unique(bills$DIAGNOSUS))
@@ -131,3 +133,9 @@ rmsle(tes$HOSPITALBILL, tes[,"(prediction)^2"])
 
 sort(setdiff(unique(bills$HOSPITAL), unique(predict$HOSPITAL)))
 sort(setdiff(unique(predict$HOSPITAL), unique(bills$HOSPITAL)))
+
+## getting all the hospital mean bill
+hospiData <- aggregate(HOSPITALBILL ~ HOSPITAL + WARDTYPE + BILLCAT, bills, mean)
+hospiData <- hospiData[order(hospiData$HOSPITAL),]
+
+hospiData[hospiData$HOSPITALBILL==0,]
