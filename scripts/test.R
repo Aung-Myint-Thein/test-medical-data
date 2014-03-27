@@ -1,16 +1,48 @@
-## import the bills data
-bills <- read.csv("data/1 Core Data/Hospital Bills Final Set.csv")
-predict <- read.csv("data/1 Core Data/201403131839-Prudential_Submissions.csv")
-
+############# import the bills data
+bills <- read.csv("data/1 Core Data/Hospital Bills Final Set v2.csv")
 bills <- bills[!is.na(bills$HOSPITALBILL), ]
-
-bills[, "AGE"] <- 2014 - bills[, "yyyy"]
-predict[, "AGE"] <- 2014 - as.numeric(substr(as.character(predict[, "YMDOB"]), 1, 4))
-
+bills[, "AGE"] <- 2014 - bills[, "YMDOB"]
 bills[, "DURATIONOFSTAY"] <- as.numeric(difftime(as.Date(bills[, "DATEDISCHARGE"], "%d/%m/%Y"), as.Date(bills[, "DATEOFADM"], "%d/%m/%Y"), units="days"))
+bills[, "DURATIONOFSTAY"] <- ifelse(is.na(bills[, "DURATIONOFSTAY"]), 0, bills[, "DURATIONOFSTAY"])
+
+## getting if the diagnosis code are in ICD 9 or ICD 10
+bills[, "cleaned"] <- clean.diagnosus(as.character(bills[, "DIAGNOSUS"]))
+bills[, "ICD9"] <- apply(bills, 1, function(row) length(grep("^[[:upper:]]+$", row["cleaned"], value=FALSE)))
+bills[, "ICD10"] <- apply(bills, 1, function(row) ifelse(row["ICD9"]==1, 0, 1))
+bills <- bills[, !names(bills) %in% c("cleaned")]
+
+## get the billtype into category data
+bills[, "inpatient"] <- ifelse(bills[, "BILLCAT"] == "IN", 1, 0)
+bills[, "outpatient"] <- ifelse(bills[, "BILLCAT"] == "OU", 1, 0)
+bills[, "surgpatient"] <- ifelse(bills[, "BILLCAT"] == "DY", 1, 0)
+
+## sort by ID and HRN
+bills <- bills[order(bills$ID, bills$HRN),]
+
+############## end of bills data
+
+############## import the predict data
+predict <- read.csv("data/1 Core Data/201403252740-Prudential_Submissions_v2.csv")
+#predict[, "AGE"] <- 2014 - as.numeric(substr(as.character(predict[, "YMDOB"]), 1, 4))
+predict[, "AGE"] <- 2014 - predict[, "YMDOB"]
 predict[, "DURATIONOFSTAY"] <- as.numeric(difftime(as.Date(predict[, "DATEDISCHARGE"], "%d/%m/%Y"), as.Date(predict[, "DATEOFADM"], "%d/%m/%Y"), units="days"))
 
-bills <- bills[order(bills$HRN),]
+## getting if the diagnosis code are in ICD 9 or ICD 10
+predict[, "cleaned"] <- clean.diagnosus(as.character(predict[, "DIAGNOSUS"]))
+predict[, "ICD9"] <- apply(predict, 1, function(row) length(grep("^[[:upper:]]+$", row["cleaned"], value=FALSE)))
+predict[, "ICD10"] <- apply(predict, 1, function(row) ifelse(row["ICD9"]==1, 0, 1))
+predict <- predict[, !names(predict) %in% c("cleaned")]
+
+## get the billtype into category data
+predict[, "inpatient"] <- ifelse(predict[, "BILLCAT"] == "IN", 1, 0)
+predict[, "outpatient"] <- ifelse(predict[, "BILLCAT"] == "OU", 1, 0)
+predict[, "surgpatient"] <- ifelse(predict[, "BILLCAT"] == "DY", 1, 0)
+
+## sort by ID and HRN
+predict <- predict[order(predict$ID, predict$HRN),]
+
+############## end of predict data
+
 
 WardType <- read.csv("data/1 Core Data/Reference - WardType.csv")
 
@@ -36,6 +68,14 @@ table(bills[bills$HOSPITALBILL < 20, "HOSPITALBILL"])
 head(bills[bills$HOSPITALBILL == 0, ])
 
 bills <- bills[order(bills$ID, bills$yyyy, bills$DATEOFEVENT, bills$HOSPITALBILL, decreasing=F),]
+
+length(unique(predict$ID))
+length(unique(bills$ID))
+length(intersect(unique(predict$ID), unique(bills$ID)))
+length(intersect(unique(bills$ID), unique(predict$ID)))
+length(setdiff(unique(bills$ID), unique(predict$ID)))
+length(setdiff(unique(predict$ID), unique(bills$ID)))
+
 
 head(bills, 30)
 
