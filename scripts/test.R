@@ -1,3 +1,5 @@
+set.seed(123442323)
+
 ############# import the bills data
 bills <- read.csv("data/1 Core Data/Hospital Bills Final Set v2.csv")
 bills <- bills[!is.na(bills$HOSPITALBILL), ]
@@ -11,13 +13,16 @@ bills[, "ICD9"] <- apply(bills, 1, function(row) length(grep("^[[:upper:]]+$", r
 bills[, "ICD10"] <- apply(bills, 1, function(row) ifelse(row["ICD9"]==1, 0, 1))
 bills <- bills[, !names(bills) %in% c("cleaned")]
 
-## get the billtype into category data
-bills[, "inpatient"] <- ifelse(bills[, "BILLCAT"] == "IN", 1, 0)
-bills[, "outpatient"] <- ifelse(bills[, "BILLCAT"] == "OU", 1, 0)
-bills[, "surgpatient"] <- ifelse(bills[, "BILLCAT"] == "DY", 1, 0)
-
 ## sort by ID and HRN
 bills <- bills[order(bills$ID, bills$HRN),]
+
+bills[, "typeofhosp"] <- ifelse(bills[, "HOSPITAL"] %in% c("Alexandra Hospital", "Changi General Hospital", "Khoo Teck Puat Hospital", 
+  "KK Women's & Children's Hospital", "National University Hospital", "Singapore General Hospital", 
+  "Tan Tock Seng Hospital", "National Heart Centre"), "public", "private")
+
+hospitals <- read.csv("hospitals.csv")
+bills <- merge(bills, hospitals, by="HOSPITAL", all.x=T, sort=F)
+
 
 ############## end of bills data
 
@@ -32,11 +37,6 @@ predict[, "cleaned"] <- clean.diagnosus(as.character(predict[, "DIAGNOSUS"]))
 predict[, "ICD9"] <- apply(predict, 1, function(row) length(grep("^[[:upper:]]+$", row["cleaned"], value=FALSE)))
 predict[, "ICD10"] <- apply(predict, 1, function(row) ifelse(row["ICD9"]==1, 0, 1))
 predict <- predict[, !names(predict) %in% c("cleaned")]
-
-## get the billtype into category data
-predict[, "inpatient"] <- ifelse(predict[, "BILLCAT"] == "IN", 1, 0)
-predict[, "outpatient"] <- ifelse(predict[, "BILLCAT"] == "OU", 1, 0)
-predict[, "surgpatient"] <- ifelse(predict[, "BILLCAT"] == "DY", 1, 0)
 
 ## sort by ID and HRN
 predict <- predict[order(predict$ID, predict$HRN),]
