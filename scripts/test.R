@@ -1,4 +1,5 @@
 set.seed(123442323)
+source("scripts/functions.R")
 
 ############# import the bills data
 bills <- read.csv("data/1 Core Data/Hospital Bills Final Set v2.csv")
@@ -16,13 +17,13 @@ bills <- bills[, !names(bills) %in% c("cleaned")]
 ## sort by ID and HRN
 bills <- bills[order(bills$ID, bills$HRN),]
 
-bills[, "typeofhosp"] <- ifelse(bills[, "HOSPITAL"] %in% c("Alexandra Hospital", "Changi General Hospital", "Khoo Teck Puat Hospital", 
-  "KK Women's & Children's Hospital", "National University Hospital", "Singapore General Hospital", 
-  "Tan Tock Seng Hospital", "National Heart Centre"), "public", "private")
-
 hospitals <- read.csv("hospitals.csv")
 bills <- merge(bills, hospitals, by="HOSPITAL", all.x=T, sort=F)
 
+ICD9  <- read.csv("data/ICD9.csv", stringsAsFactors=F)
+ICD10 <- read.csv("data/ICD10.csv", stringsAsFactors=F)
+bills[1:12500, "DIAGNOSISGROUP"] <- apply(bills[1:12500, ], 1, function(row) get.diagnosis.group(as.character(row["DIAGNOSISCODE"]), row["ICD9"], row["ICD10"], ICD9, ICD10))
+bills[12501:25009, "DIAGNOSISGROUP"] <- apply(bills[12501:25009, ], 1, function(row) get.diagnosis.group(as.character(row["DIAGNOSISCODE"]), row["ICD9"], row["ICD10"], ICD9, ICD10))
 
 ############## end of bills data
 
