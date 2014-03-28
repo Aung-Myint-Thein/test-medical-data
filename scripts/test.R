@@ -5,6 +5,7 @@ source("scripts/functions.R")
 bills <- read.csv("data/1 Core Data/Hospital Bills Final Set v2.csv")
 bills <- bills[!is.na(bills$HOSPITALBILL), ]
 bills[, "AGE"] <- 2014 - bills[, "YMDOB"]
+bills[, "AGEGROUP"] <- apply(bills, 1, function(row) get.age.group(as.numeric(row["AGE"])))
 bills[, "DURATIONOFSTAY"] <- as.numeric(difftime(as.Date(bills[, "DATEDISCHARGE"], "%d/%m/%Y"), as.Date(bills[, "DATEOFADM"], "%d/%m/%Y"), units="days"))
 bills[, "DURATIONOFSTAY"] <- ifelse(is.na(bills[, "DURATIONOFSTAY"]), 0, bills[, "DURATIONOFSTAY"])
 
@@ -179,3 +180,7 @@ hospiData <- aggregate(HOSPITALBILL ~ HOSPITAL + WARDTYPE + BILLCAT, bills, mean
 hospiData <- hospiData[order(hospiData$HOSPITAL),]
 
 hospiData[hospiData$HOSPITALBILL==0,]
+
+library(ggplot2)
+qplot(factor(AGEGROUP), HOSPITALBILL, data=bills, geom=c("boxplot"),
+      fill=factor(AGEGROUP), xlab="", ylab="Bill") 

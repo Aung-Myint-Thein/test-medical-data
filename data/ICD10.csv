@@ -1,5 +1,5 @@
 CODE,StartAlpha,EndAlpha,StartNum,EndNum,DIAGNOSISGROUP
-A00–B99,A,B,0,99,Certain infectious and parasitic diseases
+A00–B99,A,B,0,99,Infectious and parasitic diseases
 C00–D48,C,D,0,48,Neoplasms
 D50–D89,D,D,50,89,Diseases of the blood and blood-forming organs and certain disorders involving the immune mechanism
 E00–E90,E,E,0,90,"Endocrine, nutritional and metabolic diseases"
