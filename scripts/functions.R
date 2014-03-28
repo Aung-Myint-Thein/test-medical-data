@@ -45,11 +45,10 @@ get.diagnosis.group <- function(diagnosis.code, ifICD9, ifICD10, ICD9, ICD10){
         }
       }
     }
+  }
   
   }
   
   return(diagnosis.group)
-}
-
 }
 

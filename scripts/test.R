@@ -22,8 +22,7 @@ bills <- merge(bills, hospitals, by="HOSPITAL", all.x=T, sort=F)
 
 ICD9  <- read.csv("data/ICD9.csv", stringsAsFactors=F)
 ICD10 <- read.csv("data/ICD10.csv", stringsAsFactors=F)
-bills[1:12500, "DIAGNOSISGROUP"] <- apply(bills[1:12500, ], 1, function(row) get.diagnosis.group(as.character(row["DIAGNOSISCODE"]), row["ICD9"], row["ICD10"], ICD9, ICD10))
-bills[12501:25009, "DIAGNOSISGROUP"] <- apply(bills[12501:25009, ], 1, function(row) get.diagnosis.group(as.character(row["DIAGNOSISCODE"]), row["ICD9"], row["ICD10"], ICD9, ICD10))
+bills[, "DIAGNOSISGROUP"] <- apply(bills, 1, function(row) get.diagnosis.group(as.character(row["DIAGNOSISCODE"]), row["ICD9"], row["ICD10"], ICD9, ICD10))
 
 ############## end of bills data
 
