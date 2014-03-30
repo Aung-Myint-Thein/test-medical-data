@@ -1,5 +1,5 @@
 library(Metrics)
-
+library(ggplot2)
 
 
 clean.diagnosus <- function(diagnosis) {
