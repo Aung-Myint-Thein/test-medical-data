@@ -8,6 +8,7 @@ bills[, "AGE"] <- 2014 - bills[, "YMDOB"]
 bills[, "AGEGROUP"] <- apply(bills, 1, function(row) get.age.group(as.numeric(row["AGE"])))
 bills[, "DURATIONOFSTAY"] <- as.numeric(difftime(as.Date(bills[, "DATEDISCHARGE"], "%d/%m/%Y"), as.Date(bills[, "DATEOFADM"], "%d/%m/%Y"), units="days"))
 bills[, "DURATIONOFSTAY"] <- ifelse(is.na(bills[, "DURATIONOFSTAY"]), 0, bills[, "DURATIONOFSTAY"])
+bills[, "YEAROFADM"] <- apply(bills, 1, function(row) as.numeric(format(as.Date(row["DATEOFADM"], "%d/%m/%Y"), "%Y")))
 
 ## getting if the diagnosis code are in ICD 9 or ICD 10
 bills[, "cleaned"] <- clean.diagnosus(as.character(bills[, "DIAGNOSUS"]))
@@ -31,7 +32,9 @@ bills[, "DIAGNOSISGROUP"] <- apply(bills, 1, function(row) get.diagnosis.group(a
 predict <- read.csv("data/1 Core Data/201403252740-Prudential_Submissions_v2.csv")
 #predict[, "AGE"] <- 2014 - as.numeric(substr(as.character(predict[, "YMDOB"]), 1, 4))
 predict[, "AGE"] <- 2014 - predict[, "YMDOB"]
+predict[, "AGEGROUP"] <- apply(predict, 1, function(row) get.age.group(as.numeric(row["AGE"])))
 predict[, "DURATIONOFSTAY"] <- as.numeric(difftime(as.Date(predict[, "DATEDISCHARGE"], "%d/%m/%Y"), as.Date(predict[, "DATEOFADM"], "%d/%m/%Y"), units="days"))
+predict[, "YEAROFADM"] <- apply(predict, 1, function(row) as.numeric(format(as.Date(row["DATEOFADM"], "%d/%m/%Y"), "%Y")))
 
 ## getting if the diagnosis code are in ICD 9 or ICD 10
 predict[, "cleaned"] <- clean.diagnosus(as.character(predict[, "DIAGNOSUS"]))
@@ -41,6 +44,9 @@ predict <- predict[, !names(predict) %in% c("cleaned")]
 
 ## sort by ID and HRN
 predict <- predict[order(predict$ID, predict$HRN),]
+
+predict <- merge(predict, hospitals, by="HOSPITAL", all.x=T, sort=FALSE)
+predict[, "DIAGNOSISGROUP"] <- apply(predict, 1, function(row) get.diagnosis.group(as.character(row["DIAGNOSISCODE"]), row["ICD9"], row["ICD10"], ICD9, ICD10))
 
 ############## end of predict data
 
@@ -187,3 +193,14 @@ qplot(factor(AGEGROUP), HOSPITALBILL, data=bills, geom=c("boxplot"),
 ## according to age group, we can see how the trend of the bills 
 LVGK <- ggplot(data=trainData[trainData$HOSPITALBILL<50000,], aes(x=AGE, y=HOSPITALBILL))
 LVGK + geom_point(shape = 1, alpha = .8) + facet_grid(.~ AGEGROUP) + geom_smooth(method="lm")
+
+LVGK + geom_point(shape = 1, alpha = .8) + facet_grid(.~ DIAGNOSISGROUP) + geom_smooth(method="lm")
+
+## H cluster to see how many clusters should we see
+Hierarchical_Cluster_distances <- dist(trainData, method="euclidean")
+Hierarchical_Cluster <- hclust(Hierarchical_Cluster_distances, method="ward")
+# Display dendogram
+plot(Hierarchical_Cluster, main = NULL, sub=NULL, labels = 1:nrow(ProjectData_segment), xlab="Our Observations", cex.lab=1, cex.axis=1) 
+# Draw dendogram with red borders around the 3 clusters
+rect.hclust(Hierarchical_Cluster, k=numb_clusters_used, border="red") 
+

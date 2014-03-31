@@ -23,7 +23,7 @@ hist(estimation_data[, "HOSPITALBILL"])
 hist(estimation_data[, "qutbill"])
 
 #lm1 <- lm(qutbill ~ AGE + GENDER + BILLCAT + DURATIONOFSTAY, data=estimation_data)
-lm1 <- lm(qutbill ~ AGEGROUP + GENDER + factor(BILLCAT) + DURATIONOFSTAY + factor(TYPEOFHOSP) + factor(DIAGNOSISGROUP) + YEAROFADM, data=estimation_data)
+lm1 <- lm(qutbill ~ factor(AGEGROUP) + GENDER + factor(BILLCAT) + DURATIONOFSTAY + factor(TYPEOFHOSP) + factor(DIAGNOSISGROUP) + YEAROFADM, data=estimation_data)
 
 prediction <- predict(lm1, type="response", newdata=test_predict_data[, c("AGEGROUP", "GENDER", "BILLCAT", "DURATIONOFSTAY", "TYPEOFHOSP", "DIAGNOSISGROUP", "YEAROFADM")])
 hist(prediction)
@@ -82,3 +82,22 @@ rmsle(tes4$HOSPITALBILL, tes4[,"prediction"])
 
 tesmain <- rbind(tes1, tes2, tes3, tes4)
 rmsle(tesmain$HOSPITALBILL, tesmain$prediction)
+
+
+## over fitting
+trainData[, "qutbill"] <- trainData[, "HOSPITALBILL"]^(1/4)
+
+lm10 <- lm(qutbill ~ factor(AGEGROUP) + GENDER + factor(BILLCAT) + DURATIONOFSTAY + factor(TYPEOFHOSP) + factor(DIAGNOSISGROUP) + YEAROFADM, data=trainData)
+pre <- predict
+pre[, "DIAGNOSISGROUP"] <- apply(pre, 1, function(row) ifelse(row["DIAGNOSISGROUP"] %in% as.character(unique(trainData$DIAGNOSISGROUP)), row["DIAGNOSISGROUP"], "Others" ))
+
+prediction <- predict(lm10, type="response", newdata=pre[, c("AGEGROUP", "GENDER", "BILLCAT", "DURATIONOFSTAY", "TYPEOFHOSP", "DIAGNOSISGROUP", "YEAROFADM")])
+hist(prediction)
+hist((prediction)^4)
+
+tes <- cbind(pre, (prediction)^4)
+
+submission1 <- tes[, c(2,3,4,5,1,6,7,8:12,22)]
+colnames(submission1)[13] <- "HOSPITALBILL"
+
+
