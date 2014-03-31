@@ -197,10 +197,14 @@ LVGK + geom_point(shape = 1, alpha = .8) + facet_grid(.~ AGEGROUP) + geom_smooth
 LVGK + geom_point(shape = 1, alpha = .8) + facet_grid(.~ DIAGNOSISGROUP) + geom_smooth(method="lm")
 
 ## H cluster to see how many clusters should we see
-Hierarchical_Cluster_distances <- dist(trainData, method="euclidean")
+Hierarchical_Cluster_distances <- dist(trainData[, c(3:5,7:9,14)], method="euclidean")
 Hierarchical_Cluster <- hclust(Hierarchical_Cluster_distances, method="ward")
 # Display dendogram
-plot(Hierarchical_Cluster, main = NULL, sub=NULL, labels = 1:nrow(ProjectData_segment), xlab="Our Observations", cex.lab=1, cex.axis=1) 
+plot(Hierarchical_Cluster, main = NULL, sub=NULL, labels = 1:nrow(trainData), xlab="Our Observations", cex.lab=1, cex.axis=1) 
 # Draw dendogram with red borders around the 3 clusters
-rect.hclust(Hierarchical_Cluster, k=numb_clusters_used, border="red") 
+rect.hclust(Hierarchical_Cluster, k=6, border="red") 
 
+kmeans_clusters <- kmeans(trainData[, c(3:5,8:9,14)],centers=6, iter.max=1000, algorithm="Lloyd")
+
+cluster_memberships_kmeans <- kmeans_clusters$cluster 
+cluster_ids_kmeans <- unique(cluster_memberships_kmeans)
