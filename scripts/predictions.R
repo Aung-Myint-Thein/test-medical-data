@@ -5,6 +5,11 @@ trainData <- merge(trainData, unique(bills[, c("ID", "HRN", "DIAGNOSISGROUP", "A
 trainData[, "YEAROFADM"] <- apply(trainData, 1, function(row) as.numeric(format(as.Date(row["DATEOFADM"], "%d/%m/%Y"), "%Y")))
 trainData[, "qutbill"] <- trainData[, "HOSPITALBILL"]^(1/4)
 
+diagroupcode <- data.frame(DIAGNOSISGROUPCODE=c(1:23), DIAGNOSISGROUP=unique(trainData$DIAGNOSISGROUP))
+trainData <- merge(trainData, diagroupcode, by=c("DIAGNOSISGROUP"), all.x=T, sort=F)
+
+trainData[, "DIAGNOSISGROUPCLUSTER"] <- apply(trainData, 1, function(row) ifelse(row["DIAGNOSISGROUPCODE"] %in% c(1,2,5,15,16,17,19.21), 1, 2))
+
 set.seed(123442323)
 
 estimation_data_ids <- sample.int(nrow(trainData), 12000)
@@ -15,13 +20,6 @@ test_data <- trainData[non_estimation_data, ]
 
 test_data_ids <- sample(rownames(test_data), 2000)
 test_predict_data <- test_data[test_data_ids, ]
-
-#estimation_data[, "logbill"] <- ifelse(estimation_data[, "HOSPITALBILL"] == 0, 0, log(estimation_data[, "HOSPITALBILL"]))
-estimation_data[, "sqrtbill"] <- sqrt(estimation_data[, "HOSPITALBILL"])
-estimation_data[, "qutbill"] <- estimation_data[, "HOSPITALBILL"]^(1/4)
-hist(estimation_data[, "HOSPITALBILL"])
-#hist(estimation_data[, "logbill"])
-hist(estimation_data[, "qutbill"])
 
 #lm1 <- lm(qutbill ~ AGE + GENDER + BILLCAT + DURATIONOFSTAY, data=estimation_data)
 lm1 <- lm(qutbill ~ factor(AGEGROUP) + GENDER + factor(BILLCAT) + DURATIONOFSTAY + factor(TYPEOFHOSP) + factor(DIAGNOSISGROUP) + YEAROFADM, data=estimation_data)

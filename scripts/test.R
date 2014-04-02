@@ -194,7 +194,9 @@ qplot(factor(AGEGROUP), HOSPITALBILL, data=bills, geom=c("boxplot"),
 LVGK <- ggplot(data=trainData[trainData$HOSPITALBILL<50000,], aes(x=AGE, y=qutbill))
 LVGK + geom_point(shape = 1, alpha = .8) + facet_grid(.~ AGEGROUP) + geom_smooth(method="lm")
 
-LVGK + geom_point(shape = 1, alpha = .8) + facet_grid(.~ DIAGNOSISGROUP) + geom_smooth(method="lm")
+LVGK + geom_point(shape = 1, alpha = .8) + facet_grid(.~ code) + geom_smooth(method="lm")
+
+ggplot(trainData[trainData$HOSPITALBILL<50000,], aes(x=DIAGNOSISGROUP, y=qutbill)) + geom_boxplot()
 
 ## H cluster to see how many clusters should we see
 Hierarchical_Cluster_distances <- dist(trainData[, c(3:5,7:9,14)], method="euclidean")
@@ -208,3 +210,10 @@ kmeans_clusters <- kmeans(trainData[, c(3:5,8:9,14)],centers=6, iter.max=1000, a
 
 cluster_memberships_kmeans <- kmeans_clusters$cluster 
 cluster_ids_kmeans <- unique(cluster_memberships_kmeans)
+
+
+
+Hierarchical_Cluster_distances <- dist(trainData[, c(5)], method="euclidean")
+Hierarchical_Cluster <- hclust(Hierarchical_Cluster_distances, method="ward")
+# Display dendogram
+plot(Hierarchical_Cluster, main = NULL, sub=NULL, labels = 1:nrow(trainData), xlab="Our Observations", cex.lab=1, cex.axis=1) 
