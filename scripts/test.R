@@ -191,7 +191,7 @@ qplot(factor(AGEGROUP), HOSPITALBILL, data=bills, geom=c("boxplot"),
       fill=factor(AGEGROUP), xlab="", ylab="Bill") 
 
 ## according to age group, we can see how the trend of the bills 
-LVGK <- ggplot(data=trainData[trainData$HOSPITALBILL<50000,], aes(x=AGE, y=HOSPITALBILL))
+LVGK <- ggplot(data=trainData[trainData$HOSPITALBILL<50000,], aes(x=AGE, y=qutbill))
 LVGK + geom_point(shape = 1, alpha = .8) + facet_grid(.~ AGEGROUP) + geom_smooth(method="lm")
 
 LVGK + geom_point(shape = 1, alpha = .8) + facet_grid(.~ DIAGNOSISGROUP) + geom_smooth(method="lm")

@@ -3,6 +3,7 @@ trainData <- trainData[order(trainData$HRN),]
 
 trainData <- merge(trainData, unique(bills[, c("ID", "HRN", "DIAGNOSISGROUP", "AGEGROUP", "DATEOFADM")]), by=c("ID", "HRN"), sort=F, all.x=T)
 trainData[, "YEAROFADM"] <- apply(trainData, 1, function(row) as.numeric(format(as.Date(row["DATEOFADM"], "%d/%m/%Y"), "%Y")))
+trainData[, "qutbill"] <- trainData[, "HOSPITALBILL"]^(1/4)
 
 set.seed(123442323)
 
