@@ -2,6 +2,7 @@ HOSPITAL,TYPEOFHOSP
 OncoCare Cancer Centre,Cancer Specialist
 The Cancer Centre,Cancer Specialist
 Parkway Cancer Centre,Cancer Specialist
+Mow Blood & Cancer Clinic,Cancer Specialist
 St Andrew's Community Hospital,Community Hospital
 St Luke's Hospital (Community),Community Hospital
 Ren Ci Community Hospital(Comm,Community Hospital
@@ -10,6 +11,7 @@ Q & M DENTAL CLINIC (CLEMENTI),Dental
 Specialist Dental Group,Dental
 Tooth Art Dental Centre Pte Lt,Dental
 ToothCraft Dental Surgeons,Dental
+De Pacific Dental Group (Pasir,Dental
 APPLE EAR NOSE THROAT SINUS AN,ENT
 ASCENT Ear Nose Throat SG East,ENT
 ASCENT Ear Nose Throat Special,ENT
@@ -22,21 +24,27 @@ K O Chan Ear Nose Throat Sinus,ENT
 Tampines GP ENT Pain Urology &,ENT
 The Ear Nose Throat - Head & N,ENT
 "YH Goh Ear Nose Throat, Head &",ENT
+"EAR NOSE THROAT, HEAD & NECK",ENT
+AMANDELA ENT HEAD & NECK CENTR,ENT
+HN Tay ENT | Head&Neck |,ENT
 Apple Eye Centre,Eye
 EAGLE EYE CENTRE PTE LTD (EEC),Eye
 Jerry Tan Eye Surgery Pte Ltd,Eye
 Snec Eye Associates,Eye
 The Eye & Cornea Transplant Ce,Eye
 Total Eye Care Centre,Eye
+Dr Natasha Lim Eye Center,Eye
 ASIA KIDNEY DIALYSIS CENTRE,Kidney
 Centre For Kidney Diseases Pte,Kidney
 Kidney Dialysis Center,Kidney
 Kidney Therapy Centre Pte Ltd,Kidney
+ARC KIDNEY DIALYSIS CENTRE,Kidney
 Ambulatory SurgiCare (ASC),Others
 Hospital Code (Conversion),Others
 Silver Cross Family Clinic,Others
 Simon Road Family Clinic,Others
 K K Ho Clinic for Women,Others
+Our Family Clinic & Surgery Pt,Others
 Oversea Hospital,Oversea Hospital
 ALEX OOI & ASSOCIATES OBYGYN C,Private Hospital
 Ang Mo Kio - Thye Hua Kwan Ho,Private Hospital
@@ -71,6 +79,10 @@ Tucker Medical,Private Hospital
 Westpoint Family Hospital,Private Hospital
 Westpoint Family Hospital Pte,Private Hospital
 WOMEN'S CLINIC OF SINGAPORE,Private Hospital
+Cheng Clinic For Women Pte Ltd,Private Hospital
+Pristine Medical Clinic,Private Hospital
+Alexandra Hospital (Outpatient,Private Hospital
+Gleneagles (CGH Dengue Collab),Private Hospital
 Alexandra Day Hospital,Public Hospital
 Alexandra Hospital,Public Hospital
 Changi General Hospital Pte Lt,Public Hospital
@@ -105,6 +117,16 @@ Nyam Endoscopy Centre,Specialist
 Orthopaedic & Arthritis Centre,Specialist
 Seow-Choen Colorectal Centre P,Specialist
 The Oncology Centre,Specialist
+The Dermatology Practice Skin.,Specialist
+Medicare Associates,Specialist
+Renal Therapy Centre Pte Ltd,Specialist
+THE HARLEY STREET CLINIC HEART,Specialist
+Gynecology Consultants Clinic,Specialist
+Png Urology,Specialist
+Specialist Skin Clinic(s) Pte,Specialist
+Children & Adult Skin Hair,Specialist
+The Oral Maxillofacial Practic,Specialist
+Thomson Specialist Skin Centre,Specialist
 P S Lui Clinic & Surgery for W,Surgery
 Pacific Endoscopic & Day Surge,Surgery
 ADVANCE SURGICAL GROUP PTE. LT,Surgery
@@ -122,3 +144,6 @@ The Lasik Surgery Clinic,Surgery
 The Vein Clinic & Surgery Pte,Surgery
 THOMAS CLINIC & SURGERY,Surgery
 Wee Breast & General Surgery P,Surgery
+C K Yong Surgery & Breast Clin,Surgery
+Yap & Ang Surgical Associates,Surgery
+Healthwise Medical Clinic & Su,Surgery

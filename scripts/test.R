@@ -4,6 +4,7 @@ source("scripts/functions.R")
 ############# import the bills data
 bills <- read.csv("data/1 Core Data/Hospital Bills Final Set v2.csv")
 bills <- bills[!is.na(bills$HOSPITALBILL), ]
+bills <- bills[!bills$ID=="C080032649",]
 bills[, "AGE"] <- 2014 - bills[, "YMDOB"]
 bills[, "AGEGROUP"] <- apply(bills, 1, function(row) get.age.group(as.numeric(row["AGE"])))
 bills[, "DURATIONOFSTAY"] <- as.numeric(difftime(as.Date(bills[, "DATEDISCHARGE"], "%d/%m/%Y"), as.Date(bills[, "DATEOFADM"], "%d/%m/%Y"), units="days"))
@@ -25,6 +26,9 @@ bills <- merge(bills, hospitals, by="HOSPITAL", all.x=T, sort=F)
 ICD9  <- read.csv("data/ICD9.csv", stringsAsFactors=F)
 ICD10 <- read.csv("data/ICD10.csv", stringsAsFactors=F)
 bills[, "DIAGNOSISGROUP"] <- apply(bills, 1, function(row) get.diagnosis.group(as.character(row["DIAGNOSISCODE"]), row["ICD9"], row["ICD10"], ICD9, ICD10))
+
+diagroupcode <- data.frame(DIAGNOSISGROUPCODE=c(1:23), DIAGNOSISGROUP=unique(bills$DIAGNOSISGROUP))
+bills <- merge(bills, diagroupcode, by=c("DIAGNOSISGROUP"), all.x=T, sort=F)
 
 ############## end of bills data
 
@@ -196,7 +200,7 @@ LVGK + geom_point(shape = 1, alpha = .8) + facet_grid(.~ AGEGROUP) + geom_smooth
 
 LVGK + geom_point(shape = 1, alpha = .8) + facet_grid(.~ code) + geom_smooth(method="lm")
 
-ggplot(trainData[trainData$HOSPITALBILL<50000,], aes(x=DIAGNOSISGROUP, y=qutbill)) + geom_boxplot()
+ggplot(trainData[trainData$HOSPITALBILL<50000,], aes(x=factor(DIAGNOSISGROUPCODE), y=qutbill)) + geom_boxplot()
 
 ## H cluster to see how many clusters should we see
 Hierarchical_Cluster_distances <- dist(trainData[, c(3:5,7:9,14)], method="euclidean")
