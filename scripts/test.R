@@ -53,6 +53,23 @@ predict <- predict[order(predict$ID, predict$HRN),]
 predict <- merge(predict, hospitals, by="HOSPITAL", all.x=T, sort=FALSE)
 predict[, "DIAGNOSISGROUP"] <- apply(predict, 1, function(row) get.diagnosis.group(as.character(row["DIAGNOSISCODE"]), row["ICD9"], row["ICD10"], ICD9, ICD10))
 
+for(i in 1:nrow(diagroupcode)){
+  variable.name <- gsub(" ", ".", as.character(diagroupcode[i,2]))
+  variable.name <- gsub(",", "", variable.name)
+  variable.name <- gsub("-", "", variable.name)
+  predict[, variable.name] <- ifelse(predict[, "DIAGNOSISGROUP"] == as.character(diagroupcode[i,2]), 1, 0)
+}
+
+typeofhospcode <- data.frame(typeofhospcode=c(1:13), TYPEOFHOSP=unique(hospitals$TYPEOFHOSP))
+
+for(i in 1:nrow(typeofhospcode)){
+  variable.name <- gsub(" ", ".", as.character(typeofhospcode[i,2]))
+  variable.name <- gsub(",", "", variable.name)
+  variable.name <- gsub("-", "", variable.name)
+  predict[, variable.name] <- ifelse(predict[, "TYPEOFHOSP"] == as.character(typeofhospcode[i,2]), 1, 0)
+}
+
+
 ############## end of predict data
 
 

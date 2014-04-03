@@ -104,7 +104,7 @@ tes3.1.4 <- cbind(test_predict_data[test_predict_data$BILLCAT=="",], (prediction
 rmsle(tes3.1.4$HOSPITALBILL, tes3.1.4[,"(prediction)^4"]) ## 1.142522
 
 tesmain3.1 <- rbind(tes3.1.1, tes3.1.2, tes3.1.3, tes3.1.4)
-rmsle(tesmain3.1$HOSPITALBILL, tesmain3.1[,"(prediction)^4"]) ## 1.042781
+rmsle(tesmain3.1$HOSPITALBILL, tesmain3.1[,"(prediction)^4"]) ## 1.042781 0.9972215
 
 ## iteration 2 
 lm1 <- lm(qutbill ~ AGE + GENDER + factor(BILLCAT) + DURATIONOFSTAY + factor(TYPEOFHOSP) + factor(DIAGNOSISGROUP) + YEAROFADM , data=estimation_data)
@@ -145,7 +145,7 @@ colnames(tes4)[ncol(tes4)] <- "prediction"
 #rmsle(tes4$HOSPITALBILL, tes4[,"prediction"])
 
 tesmain <- rbind(tes1, tes2, tes3, tes4)
-rmsle(tesmain$HOSPITALBILL, tesmain$prediction) ## 1.093548
+rmsle(tesmain$HOSPITALBILL, tesmain$prediction) ## 1.093548 1.029818
 
 tesmain3.1.1 <- merge(tesmain, tesmain3.1, by=!colnames(tesmain) %in% c("prediction"))
 tesmain3.1.1[, "preMean"] <- apply(tesmain3.1.1, 1, function(row) mean(c(as.numeric(row["prediction"]), as.numeric(row["(prediction)^4"])))) 
@@ -164,10 +164,33 @@ rmsle(tesmain3.1.1$HOSPITALBILL, tesmain3.1.1$preMin) ## 1.049124
 
 
 
-
+### ITERATION 4
+BILLCATCODE <- data.frame(BILLCATCODE=c(1:4), BILLCAT=unique(bills$BILLCAT))
+tesmain <- tes4[0,]
 
 ## need to test with AGE GROUP, BILL CAT total 16
+for(i in 1:4){
+  for(j in 1:4){
+    lm4 <- lm(qutbill ~ AGE + GENDER + DURATIONOFSTAY + YEAROFADM +
+                Cancer.Specialist + Community.Hospital + Dental + ENT + Eye + Kidney + Others + Oversea.Hospital + Private.Hospital + Public.Hospital + 
+                Public.Specialist + Specialist + Surgery +
+                Diseases.of.the.genitourinary.system + Symptoms.signs.and.abnormal.clinical.and.laboratory.findings.not.elsewhere.classified + Diseases.of.the.nervous.system + Diseases.of.the.respiratory.system + Infectious.and.parasitic.diseases + Diseases.of.the.eye.and.adnexa + Diseases.of.the.sense.organs + Diseases.of.the.digestive.system + Diseases.of.the.circulatory.system + Diseases.of.the.skin.and.subcutaneous.tissue + Injury.poisoning.and.certain.other.consequences.of.external.causes + Diseases.of.the.musculoskeletal.system.and.connective.tissue + Neoplasms + Mental.and.behavioural.disorders + Factors.influencing.health.status.and.contact.with.health.services + Endocrine.nutritional.and.metabolic.diseases + Others + Diseases.of.the.ear.and.mastoid.process + Diseases.of.the.blood.and.bloodforming.organs.and.certain.disorders.involving.the.immune.mechanism + Pregnancy.childbirth.and.the.puerperium + Congenital.malformations.deformations.and.chromosomal.abnormalities + External.causes.of.morbidity.and.mortality + Certain.conditions.originating.in.the.perinatal.period
+              , data=estimation_data[estimation_data$AGEGROUP == i & estimation_data$BILLCAT == BILLCATCODE[j,2],])
+    
+    test_data4 <- test_predict_data[test_predict_data$AGEGROUP == i & test_predict_data$BILLCAT == BILLCATCODE[j,2],]
+    
+    prediction4 <- predict(lm4, type="response", newdata=test_data4)
+    tes4 <- cbind(test_data4, (prediction4)^4)
+    colnames(tes4)[ncol(tes4)] <- "prediction"
+    rmsle(tes4$HOSPITALBILL, tes4[,"prediction"])
+    
+    tesmain <- rbind(tesmain, tes4)
+  }
+}
 
+rmsle(tesmain$HOSPITALBILL, tesmain$prediction) #0.9906317
+
+## testing for one group out of 16
 lm4 <- lm(qutbill ~ AGE + GENDER + factor(BILLCAT) + DURATIONOFSTAY + YEAROFADM +
             Cancer.Specialist + Community.Hospital + Dental + ENT + Eye + Kidney + Others + Oversea.Hospital + Private.Hospital + Public.Hospital + 
             Public.Specialist + Specialist + Surgery +
