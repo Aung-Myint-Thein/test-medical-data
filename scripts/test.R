@@ -200,7 +200,19 @@ LVGK + geom_point(shape = 1, alpha = .8) + facet_grid(.~ AGEGROUP) + geom_smooth
 
 LVGK + geom_point(shape = 1, alpha = .8) + facet_grid(.~ code) + geom_smooth(method="lm")
 
+LVGK + geom_point(shape = 1, alpha = .8) + facet_grid(.~ BILLCAT) + geom_smooth(method="lm")
+
 ggplot(trainData[trainData$HOSPITALBILL<50000,], aes(x=factor(DIAGNOSISGROUPCODE), y=qutbill)) + geom_boxplot()
+
+ggplot(trainData[trainData$HOSPITALBILL<50000,], aes(x=factor(BILLCAT), y=qutbill)) + geom_boxplot()
+
+
+p <- ggplot(data=trainData[trainData$HOSPITALBILL<50000,], aes(x=AGE, y=qutbill, group=HRN))
+p + geom_line()
+
+## this plot can be used for report
+p <- ggplot(data=trainData[trainData$HOSPITALBILL<50000,], aes(factor(BILLCAT), qutbill))
+p + geom_boxplot(aes(fill = factor(AGEGROUP)))
 
 ## H cluster to see how many clusters should we see
 Hierarchical_Cluster_distances <- dist(trainData[, c(3:5,7:9,14)], method="euclidean")
