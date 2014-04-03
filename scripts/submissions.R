@@ -28,13 +28,11 @@ test_data2[, "TYPEOFHOSP"] <- apply(test_data2, 1, function(row) ifelse(row["TYP
 prediction2 <- predict(lm2, type="response", newdata=test_data2[test_data2$AGEGROUP == 2, c("AGE", "GENDER", "BILLCAT", "DURATIONOFSTAY", "TYPEOFHOSP", "DIAGNOSISGROUP", "YEAROFADM")])
 tes2 <- cbind(test_data2, (prediction2)^4)
 colnames(tes2)[ncol(tes2)] <- "prediction"
-#rmsle(tes2$HOSPITALBILL, tes2[,"prediction"])
 
 lm3 <- lm(qutbill ~ AGE + GENDER + factor(BILLCAT) + DURATIONOFSTAY + factor(TYPEOFHOSP) + factor(DIAGNOSISGROUP) + YEAROFADM, data=estimation_data[estimation_data$AGEGROUP == 3,])
 prediction3 <- predict(lm3, type="response", newdata=pre[pre$AGEGROUP == 3, c("AGE", "GENDER", "BILLCAT", "DURATIONOFSTAY", "TYPEOFHOSP", "DIAGNOSISGROUP", "YEAROFADM")])
 tes3 <- cbind(pre[pre$AGEGROUP == 3, ], (prediction3)^4)
 colnames(tes3)[ncol(tes3)] <- "prediction"
-#rmsle(tes3$HOSPITALBILL, tes3[,"prediction"])
 
 lm4 <- lm(qutbill ~ AGE + GENDER + factor(BILLCAT) + DURATIONOFSTAY + factor(TYPEOFHOSP) + factor(DIAGNOSISGROUP) + YEAROFADM, data=estimation_data[estimation_data$AGEGROUP == 4,])
 test_data4 <- pre[pre$AGEGROUP == 4,]
@@ -43,7 +41,6 @@ test_data4[, "DIAGNOSISGROUP"] <- apply(test_data4, 1, function(row) ifelse(row[
 prediction4 <- predict(lm4, type="response", newdata=test_data4[, c("AGE", "GENDER", "BILLCAT", "DURATIONOFSTAY", "TYPEOFHOSP", "DIAGNOSISGROUP", "YEAROFADM")])
 tes4 <- cbind(test_data4, (prediction4)^4)
 colnames(tes4)[ncol(tes4)] <- "prediction"
-#rmsle(tes4$HOSPITALBILL, tes4[,"prediction"])
 
 tesmain <- rbind(tes1, tes2, tes3, tes4)
 

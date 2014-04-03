@@ -233,3 +233,7 @@ Hierarchical_Cluster_distances <- dist(trainData[, c(5)], method="euclidean")
 Hierarchical_Cluster <- hclust(Hierarchical_Cluster_distances, method="ward")
 # Display dendogram
 plot(Hierarchical_Cluster, main = NULL, sub=NULL, labels = 1:nrow(trainData), xlab="Our Observations", cex.lab=1, cex.axis=1) 
+
+
+testtt <- bills
+
