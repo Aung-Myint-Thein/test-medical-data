@@ -24,27 +24,43 @@ test_data <- trainData[non_estimation_data, ]
 test_data_ids <- sample(rownames(test_data), 2000)
 test_predict_data <- test_data[test_data_ids, ]
 
-#iteration 1 (1.102479)
+#iteration 1
 lm1 <- lm(qutbill ~ factor(AGEGROUP) + GENDER + factor(BILLCAT) + DURATIONOFSTAY + factor(TYPEOFHOSP) + factor(DIAGNOSISGROUP) + YEAROFADM , data=estimation_data)
 prediction <- predict(lm1, type="response", newdata=test_predict_data[, c("AGEGROUP", "GENDER", "BILLCAT", "DURATIONOFSTAY", "TYPEOFHOSP", "DIAGNOSISGROUP", "YEAROFADM")])
 tes <- cbind(test_predict_data, (prediction)^4)
-rmsle(tes$HOSPITALBILL, tes[,"(prediction)^4"])
+rmsle(tes$HOSPITALBILL, tes[,"(prediction)^4"]) # 1.102479
 
 ## iteration 3.1 
-rmsle(tes[tes$BILLCAT == "DY", "HOSPITALBILL"], tes[tes$BILLCAT == "DY","(prediction)^4"])
+rmsle(tes[tes$BILLCAT == "DY", "HOSPITALBILL"], tes[tes$BILLCAT == "DY","(prediction)^4"]) ## 1.033707
 
-lm3.1 <- lm(qutbill ~ factor(AGEGROUP) + GENDER + DURATIONOFSTAY + factor(TYPEOFHOSP) + factor(DIAGNOSISGROUP) + YEAROFADM , data=estimation_data[estimation_data$BILLCAT=="DY",])
-prediction <- predict(lm3.1, type="response", newdata=test_predict_data[test_predict_data$BILLCAT=="DY", c("AGEGROUP", "GENDER", "BILLCAT", "DURATIONOFSTAY", "TYPEOFHOSP", "DIAGNOSISGROUP", "YEAROFADM")])
-tes <- cbind(test_predict_data[test_predict_data$BILLCAT=="DY",], (prediction)^4)
-rmsle(tes$HOSPITALBILL, tes[,"(prediction)^4"])
+lm3.1.1 <- lm(qutbill ~ factor(AGEGROUP) + GENDER + DURATIONOFSTAY + factor(TYPEOFHOSP) + factor(DIAGNOSISGROUP) + YEAROFADM , data=estimation_data[estimation_data$BILLCAT=="DY",])
+prediction <- predict(lm3.1.1, type="response", newdata=test_predict_data[test_predict_data$BILLCAT=="DY", c("AGEGROUP", "GENDER", "BILLCAT", "DURATIONOFSTAY", "TYPEOFHOSP", "DIAGNOSISGROUP", "YEAROFADM")])
+tes3.1.1 <- cbind(test_predict_data[test_predict_data$BILLCAT=="DY",], (prediction)^4)
+rmsle(tes3.1.1$HOSPITALBILL, tes3.1.1[,"(prediction)^4"]) ## 0.9803987
 
+lm3.1.2 <- lm(qutbill ~ AGE + GENDER + DURATIONOFSTAY + factor(TYPEOFHOSP) + factor(DIAGNOSISGROUP) + YEAROFADM , data=estimation_data[estimation_data$BILLCAT=="OU",])
+prediction <- predict(lm3.1.2, type="response", newdata=test_predict_data[test_predict_data$BILLCAT=="OU", c("AGE", "GENDER", "BILLCAT", "DURATIONOFSTAY", "TYPEOFHOSP", "DIAGNOSISGROUP", "YEAROFADM")])
+tes3.1.2 <- cbind(test_predict_data[test_predict_data$BILLCAT=="OU",], (prediction)^4)
+rmsle(tes3.1.2$HOSPITALBILL, tes3.1.2[,"(prediction)^4"]) ## 1.210981
 
+lm3.1.3 <- lm(qutbill ~ AGE + GENDER + DURATIONOFSTAY + factor(TYPEOFHOSP) + factor(DIAGNOSISGROUP) + YEAROFADM , data=estimation_data[estimation_data$BILLCAT=="IN",])
+prediction <- predict(lm3.1.3, type="response", newdata=test_predict_data[test_predict_data$BILLCAT=="IN", c("AGE", "GENDER", "BILLCAT", "DURATIONOFSTAY", "TYPEOFHOSP", "DIAGNOSISGROUP", "YEAROFADM")])
+tes3.1.3 <- cbind(test_predict_data[test_predict_data$BILLCAT=="IN",], (prediction)^4)
+rmsle(tes3.1.3$HOSPITALBILL, tes3.1.3[,"(prediction)^4"]) ## 1.003771
 
-## iteration 2 (1.117599)
+lm3.1.4 <- lm(qutbill ~ AGE + GENDER + DURATIONOFSTAY + factor(TYPEOFHOSP) + factor(DIAGNOSISGROUP) + YEAROFADM , data=estimation_data[estimation_data$BILLCAT=="",])
+prediction <- predict(lm3.1.4, type="response", newdata=test_predict_data[test_predict_data$BILLCAT=="", c("AGE", "GENDER", "BILLCAT", "DURATIONOFSTAY", "TYPEOFHOSP", "DIAGNOSISGROUP", "YEAROFADM")])
+tes3.1.4 <- cbind(test_predict_data[test_predict_data$BILLCAT=="",], (prediction)^4)
+rmsle(tes3.1.4$HOSPITALBILL, tes3.1.4[,"(prediction)^4"]) ## 1.152903
+
+tesmain3.1 <- rbind(tes3.1.1, tes3.1.2, tes3.1.3, tes3.1.4)
+rmsle(tesmain3.1$HOSPITALBILL, tesmain3.1[,"(prediction)^4"]) ## 1.053199
+
+## iteration 2 
 lm1 <- lm(qutbill ~ AGE + GENDER + factor(BILLCAT) + DURATIONOFSTAY + factor(TYPEOFHOSP) + factor(DIAGNOSISGROUP) + YEAROFADM , data=estimation_data)
 prediction <- predict(lm1, type="response", newdata=test_predict_data[, c("AGE", "GENDER", "BILLCAT", "DURATIONOFSTAY", "TYPEOFHOSP", "DIAGNOSISGROUP", "YEAROFADM")])
 tes <- cbind(test_predict_data, (prediction)^4)
-rmsle(tes$HOSPITALBILL, tes[,"(prediction)^4"])
+rmsle(tes$HOSPITALBILL, tes[,"(prediction)^4"]) ##1.117599
 
 
 ## testing with age group
@@ -78,10 +94,12 @@ colnames(tes4)[ncol(tes4)] <- "prediction"
 #rmsle(tes4$HOSPITALBILL, tes4[,"prediction"])
 
 tesmain <- rbind(tes1, tes2, tes3, tes4)
-rmsle(tesmain$HOSPITALBILL, tesmain$prediction)
+rmsle(tesmain$HOSPITALBILL, tesmain$prediction) ## 1.093548
 
-
-
-
+tesmain3.1.1 <- merge(tesmain, tesmain3.1, by=!colnames(tesmain) %in% c("prediction"))
+tesmain3.1.1[, "preMean"] <- apply(tesmain3.1.1, 1, function(row) mean(c(as.numeric(row["prediction"]), as.numeric(row["(prediction)^4"])))) 
+tesmain3.1.1[, "preMin"] <- apply(tesmain3.1.1, 1, function(row) min(as.numeric(row["prediction"]), as.numeric(row["(prediction)^4"])))
+rmsle(tesmain3.1.1$HOSPITALBILL, tesmain3.1.1$preMean) ## 1.058512
+rmsle(tesmain3.1.1$HOSPITALBILL, tesmain3.1.1$preMin) ## 1.050212
 
 
