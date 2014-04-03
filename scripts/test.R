@@ -1,3 +1,4 @@
+rm(list=ls())
 set.seed(123442323)
 source("scripts/functions.R")
 

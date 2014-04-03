@@ -30,10 +30,20 @@ trainData[, "Public.Specialist"] <- ifelse(trainData[, "TYPEOFHOSP"] == "Public 
 trainData[, "Specialist"] <- ifelse(trainData[, "TYPEOFHOSP"] == "Specialist", 1, 0)
 trainData[, "Surgery"] <- ifelse(trainData[, "TYPEOFHOSP"] == "Surgery", 1, 0)
 
-trainData[, "Diseases.of.the.genitourinary.system"] <- ifelse(trainData[, "DIAGNOSISGROUP"] == "Diseases of the genitourinary system", 1, 0)
 for(i in 1:nrow(diagroupcode)){
   variable.name <- gsub(" ", ".", as.character(diagroupcode[i,2]))
+  variable.name <- gsub(",", "", variable.name)
+  variable.name <- gsub("-", "", variable.name)
   trainData[, variable.name] <- ifelse(trainData[, "DIAGNOSISGROUP"] == as.character(diagroupcode[i,2]), 1, 0)
+}
+
+## for formula
+string <- ""
+for(i in 1:nrow(diagroupcode)){
+  code <- gsub(" ", ".", as.character(diagroupcode[i, 2]))
+  code <- gsub(",", "", code)
+  code <- gsub("-", "", code)
+  string <- paste(string, "+", code , sep=" ")
 }
 
 ggplot(trainData[trainData$HOSPITALBILL<50000,], aes(x=factor(DIAGNOSISGROUPCODE), y=qutbill)) + geom_boxplot()
@@ -77,7 +87,9 @@ tes3.1.1 <- cbind(test_predict_data[test_predict_data$BILLCAT=="DY",], (predicti
 rmsle(tes3.1.1$HOSPITALBILL, tes3.1.1[,"(prediction)^4"]) ## 0.9803987
 
 lm3.1.2 <- lm(qutbill ~ factor(AGEGROUP) + GENDER + DURATIONOFSTAY + factor(TYPEOFHOSP) + factor(DIAGNOSISGROUP) + YEAROFADM , data=estimation_data[estimation_data$BILLCAT=="OU",])
-prediction <- predict(lm3.1.2, type="response", newdata=test_predict_data[test_predict_data$BILLCAT=="OU", c("AGEGROUP", "GENDER", "DURATIONOFSTAY", "TYPEOFHOSP", "DIAGNOSISGROUP", "YEAROFADM")])
+test_data2 <- test_predict_data[test_predict_data$BILLCAT == "OU",]
+test_data2[, "DIAGNOSISGROUP"] <- apply(test_data2, 1, function(row) ifelse(row["DIAGNOSISGROUP"] %in% as.character(unique(estimation_data[estimation_data$BILLCAT == "OU","DIAGNOSISGROUP"])), row["DIAGNOSISGROUP"], "Others" ))
+prediction <- predict(lm3.1.2, type="response", newdata=test_data2)
 tes3.1.2 <- cbind(test_predict_data[test_predict_data$BILLCAT=="OU",], (prediction)^4)
 rmsle(tes3.1.2$HOSPITALBILL, tes3.1.2[,"(prediction)^4"]) ## 1.19964
 
@@ -111,6 +123,7 @@ colnames(tes1)[ncol(tes1)] <- "prediction"
 lm2 <- lm(qutbill ~ AGE + GENDER + factor(BILLCAT) + DURATIONOFSTAY + factor(TYPEOFHOSP) + factor(DIAGNOSISGROUP) + YEAROFADM, data=estimation_data[estimation_data$AGEGROUP == 2,])
 test_data2 <- test_predict_data[test_predict_data$AGEGROUP == 2,]
 test_data2[, "TYPEOFHOSP"] <- apply(test_data2, 1, function(row) ifelse(row["TYPEOFHOSP"] %in% as.character(unique(estimation_data[estimation_data$AGEGROUP == 2,"TYPEOFHOSP"])), row["TYPEOFHOSP"], "Others" ))
+test_data2[, "DIAGNOSISGROUP"] <- apply(test_data2, 1, function(row) ifelse(row["DIAGNOSISGROUP"] %in% as.character(unique(estimation_data[estimation_data$AGEGROUP == 2,"DIAGNOSISGROUP"])), row["DIAGNOSISGROUP"], "Others" ))
 prediction2 <- predict(lm2, type="response", newdata=test_data2[test_data2$AGEGROUP == 2, c("AGE", "GENDER", "BILLCAT", "DURATIONOFSTAY", "TYPEOFHOSP", "DIAGNOSISGROUP", "YEAROFADM")])
 tes2 <- cbind(test_data2[test_data2$AGEGROUP == 2, ], (prediction2)^4)
 colnames(tes2)[ncol(tes2)] <- "prediction"
@@ -153,29 +166,13 @@ rmsle(tesmain3.1.1$HOSPITALBILL, tesmain3.1.1$preMin) ## 1.049124
 
 
 
+## need to test with AGE GROUP, BILL CAT total 16
 
-lm4 <- lm(qutbill ~ AGE + GENDER + factor(BILLCAT) + DURATIONOFSTAY + factor(DIAGNOSISGROUP) + YEAROFADM +
-            Cancer.Specialist + Community.Hospital + Dental + ENT + Eye + Kidney + Others + Oversea.Hospital + Private.Hospital + Public.Hospital + 
-            Public.Specialist + Specialist + Surgery, data=estimation_data[estimation_data$AGEGROUP == 4,])
-
-test_data4 <- test_predict_data[test_predict_data$AGEGROUP == 4,]
-
-prediction4 <- predict(lm4, type="response", newdata=test_data4[test_data4$AGEGROUP == 4,])
-tes4 <- cbind(test_data4[test_data4$AGEGROUP == 4, ], (prediction4)^4)
-colnames(tes4)[ncol(tes4)] <- "prediction"
-rmsle(tes4$HOSPITALBILL, tes4[,"prediction"])
-
-lm4 <- lm(qutbill ~ AGE + GENDER + factor(BILLCAT) + DURATIONOFSTAY + factor(DIAGNOSISGROUP) + YEAROFADM +
+lm4 <- lm(qutbill ~ AGE + GENDER + factor(BILLCAT) + DURATIONOFSTAY + YEAROFADM +
             Cancer.Specialist + Community.Hospital + Dental + ENT + Eye + Kidney + Others + Oversea.Hospital + Private.Hospital + Public.Hospital + 
             Public.Specialist + Specialist + Surgery +
-            Diseases.of.the.genitourinary.system + Symptoms,.signs.and.abnormal.clinical.and.laboratory.findings,.not.elsewhere.classified + 
-            Diseases.of.the.nervous.system + Diseases.of.the.respiratory.system + Infectious.and.parasitic.diseases + Diseases.of.the.eye.and.adnexa + 
-            Diseases.of.the.sense.organs + Diseases.of.the.digestive.system + Diseases.of.the.circulatory.system + Diseases.of.the.skin.and.subcutaneous.tissue + 
-            Injury,.poisoning.and.certain.other.consequences.of.external.causes + Diseases.of.the.musculoskeletal.system.and.connective.tissue + Neoplasms + 
-            Mental.and.behavioural.disorders + Factors.influencing.health.status.and.contact.with.health.services + Endocrine,.nutritional.and.metabolic.diseases + Others + 
-            Diseases.of.the.ear.and.mastoid.process + Diseases.of.the.blood.and.blood-forming.organs.and.certain.disorders.involving.the.immune.mechanism + 
-            Pregnancy,.childbirth.and.the.puerperium + Congenital.malformations,.deformations.and.chromosomal.abnormalities + External.causes.of.morbidity.and.mortality + 
-            Certain.conditions.originating.in.the.perinatal.period, data=estimation_data[estimation_data$AGEGROUP == 4,])
+            Diseases.of.the.genitourinary.system + Symptoms.signs.and.abnormal.clinical.and.laboratory.findings.not.elsewhere.classified + Diseases.of.the.nervous.system + Diseases.of.the.respiratory.system + Infectious.and.parasitic.diseases + Diseases.of.the.eye.and.adnexa + Diseases.of.the.sense.organs + Diseases.of.the.digestive.system + Diseases.of.the.circulatory.system + Diseases.of.the.skin.and.subcutaneous.tissue + Injury.poisoning.and.certain.other.consequences.of.external.causes + Diseases.of.the.musculoskeletal.system.and.connective.tissue + Neoplasms + Mental.and.behavioural.disorders + Factors.influencing.health.status.and.contact.with.health.services + Endocrine.nutritional.and.metabolic.diseases + Others + Diseases.of.the.ear.and.mastoid.process + Diseases.of.the.blood.and.bloodforming.organs.and.certain.disorders.involving.the.immune.mechanism + Pregnancy.childbirth.and.the.puerperium + Congenital.malformations.deformations.and.chromosomal.abnormalities + External.causes.of.morbidity.and.mortality + Certain.conditions.originating.in.the.perinatal.period
+            , data=estimation_data[estimation_data$AGEGROUP == 4,])
 
 test_data4 <- test_predict_data[test_predict_data$AGEGROUP == 4,]
 
@@ -184,8 +181,3 @@ tes4 <- cbind(test_data4[test_data4$AGEGROUP == 4, ], (prediction4)^4)
 colnames(tes4)[ncol(tes4)] <- "prediction"
 rmsle(tes4$HOSPITALBILL, tes4[,"prediction"])
 
-string <- ""
-for(i in 1:nrow(diagroupcode)){
-  
-  string <- paste(string, "+", gsub(" ", ".", as.character(diagroupcode[i, 2])), sep=" ")
-}
