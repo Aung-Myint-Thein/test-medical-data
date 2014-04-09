@@ -1,7 +1,7 @@
 trainData <- aggregate(HOSPITALBILL ~ ID + AGE + GENDER + HRN + HOSPITAL + DIAGNOSISCODE  + BILLCAT + DURATIONOFSTAY + TYPEOFHOSP , bills, mean)
 trainData <- trainData[order(trainData$HRN),]
 
-trainData <- merge(trainData, unique(bills[, c("ID", "HRN", "DIAGNOSISGROUP", "AGEGROUP", "DATEOFADM", "DIAGNOSISGROUPCODE")]), by=c("ID", "HRN"), sort=F, all.x=T)
+trainData <- merge(trainData, unique(bills[, c("ID", "HRN", "DIAGNOSISGROUP", "AGEGROUP", "DATEOFADM", "DIAGNOSISGROUPCODE", "ADM2013")]), by=c("ID", "HRN"), sort=F, all.x=T)
 trainData[, "YEAROFADM"] <- apply(trainData, 1, function(row) as.numeric(format(as.Date(row["DATEOFADM"], "%d/%m/%Y"), "%Y")))
 trainData[, "qutbill"] <- trainData[, "HOSPITALBILL"]^(1/4)
 trainData[, "sqrtbill"]<- trainData[, "HOSPITALBILL"]^(1/2)
@@ -204,3 +204,42 @@ tes4 <- cbind(test_data4[test_data4$AGEGROUP == 4, ], (prediction4)^4)
 colnames(tes4)[ncol(tes4)] <- "prediction"
 rmsle(tes4$HOSPITALBILL, tes4[,"prediction"])
 
+### testing for ADM2013
+
+x <- estimation_data
+y <- test_predict_data
+
+estimation_data <- estimation_data[estimation_data$BILLCAT == "", ]
+test_predict_data <- test_predict_data[test_predict_data$BILLCAT == "", ]
+
+logreg_solution <- glm(ADM2013 ~ AGE + GENDER +factor(BILLCAT) + DURATIONOFSTAY + YEAROFADM +
+                         Cancer.Specialist + Community.Hospital + Dental + ENT + Eye + Kidney + Others + Oversea.Hospital + Private.Hospital + Public.Hospital + 
+                         Public.Specialist + Specialist + Surgery +
+                         Diseases.of.the.genitourinary.system + Symptoms.signs.and.abnormal.clinical.and.laboratory.findings.not.elsewhere.classified + Diseases.of.the.nervous.system + Diseases.of.the.respiratory.system + Infectious.and.parasitic.diseases + Diseases.of.the.eye.and.adnexa + Diseases.of.the.sense.organs + Diseases.of.the.digestive.system + Diseases.of.the.circulatory.system + Diseases.of.the.skin.and.subcutaneous.tissue + Injury.poisoning.and.certain.other.consequences.of.external.causes + Diseases.of.the.musculoskeletal.system.and.connective.tissue + Neoplasms + Mental.and.behavioural.disorders + Factors.influencing.health.status.and.contact.with.health.services + Endocrine.nutritional.and.metabolic.diseases + Others + Diseases.of.the.ear.and.mastoid.process + Diseases.of.the.blood.and.bloodforming.organs.and.certain.disorders.involving.the.immune.mechanism + Pregnancy.childbirth.and.the.puerperium + Congenital.malformations.deformations.and.chromosomal.abnormalities + External.causes.of.morbidity.and.mortality + Certain.conditions.originating.in.the.perinatal.period
+  , family=binomial(link="logit"),  data=estimation_data)
+test_Probability_class1_log <- predict(logreg_solution, type="response", newdata=test_predict_data)
+test_prediction_class_log   <- 1*as.vector(test_Probability_class1_log > .3)
+
+test101 <- cbind(test_predict_data, test_prediction_class_log)
+
+## hit rate
+100*sum(test_prediction_class_log==test_predict_data[, "ADM2013"])/length(test_predict_data[, "ADM2013"])
+
+##
+sum((!test_predict_data[, "ADM2013"]))/nrow(test_predict_data)
+
+## confusion matrix
+conf_matrix = matrix(rep(0,4),ncol=2)
+conf_matrix[1,1]<- 100*sum(test_prediction_class_log*test_predict_data[, "ADM2013"])/sum(test_predict_data[, "ADM2013"])
+conf_matrix[1,2]<- 100*sum((!test_prediction_class_log)*test_predict_data[, "ADM2013"])/sum(test_predict_data[, "ADM2013"])
+conf_matrix[2,2]<- 100*sum((!test_prediction_class_log)*(!test_predict_data[, "ADM2013"]))/sum((!test_predict_data[, "ADM2013"]))
+conf_matrix[2,1]<- 100*sum((test_prediction_class_log)*(!test_predict_data[, "ADM2013"]))/sum((!test_predict_data[, "ADM2013"]))
+conf_matrix = round(conf_matrix,2)
+
+colnames(conf_matrix) <- c("Predicted 1", "Predicted 0")
+rownames(conf_matrix) <- c("Actual 1", "Actual 0")
+
+conf_matrix
+
+estimation_data <- x
+test_predict_data <- y

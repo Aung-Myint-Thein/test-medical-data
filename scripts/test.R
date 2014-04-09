@@ -72,6 +72,12 @@ for(i in 1:nrow(typeofhospcode)){
 
 ############## end of predict data
 
+############## Preparation for classification exercise
+
+bills[, "ADM2013"] <- apply(bills, 1, function(row) ifelse(as.character(row["ID"]) %in% unique(predict$ID), 1, 0))
+
+############## End of Preparation for classification exercise
+
 
 WardType <- read.csv("data/1 Core Data/Reference - WardType.csv")
 
