@@ -206,11 +206,11 @@ rmsle(tes4$HOSPITALBILL, tes4[,"prediction"])
 
 ### testing for ADM2013
 
-x <- estimation_data
-y <- test_predict_data
+#x <- estimation_data
+#y <- test_predict_data
 
-estimation_data <- estimation_data[estimation_data$BILLCAT == "", ]
-test_predict_data <- test_predict_data[test_predict_data$BILLCAT == "", ]
+#estimation_data <- estimation_data[estimation_data$BILLCAT == "", ]
+#test_predict_data <- test_predict_data[test_predict_data$BILLCAT == "", ]
 
 logreg_solution <- glm(ADM2013 ~ AGE + GENDER +factor(BILLCAT) + DURATIONOFSTAY + YEAROFADM +
                          Cancer.Specialist + Community.Hospital + Dental + ENT + Eye + Kidney + Others + Oversea.Hospital + Private.Hospital + Public.Hospital + 
@@ -241,5 +241,5 @@ rownames(conf_matrix) <- c("Actual 1", "Actual 0")
 
 conf_matrix
 
-estimation_data <- x
-test_predict_data <- y
+#estimation_data <- x
+#test_predict_data <- y

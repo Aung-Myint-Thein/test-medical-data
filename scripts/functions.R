@@ -1,7 +1,7 @@
 library(Metrics)
 library(ggplot2)
 library(e1071)
-
+library(reshape)
 
 clean.diagnosus <- function(diagnosis) {
   diagnosus <- diagnosis

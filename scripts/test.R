@@ -73,9 +73,9 @@ for(i in 1:nrow(typeofhospcode)){
 ############## end of predict data
 
 ############## Preparation for classification exercise
-
-bills[, "ADM2013"] <- apply(bills, 1, function(row) ifelse(as.character(row["ID"]) %in% unique(predict$ID), 1, 0))
-
+IDS <- unique(predict$ID)
+bills[, "ADM2013"] <- apply(bills, 1, function(row) ifelse(as.character(row["ID"]) %in% IDS, 1, 0))
+rm(IDS)
 ############## End of Preparation for classification exercise
 
 
