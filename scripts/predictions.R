@@ -218,7 +218,7 @@ logreg_solution <- glm(ADM2013 ~ AGE + GENDER +factor(BILLCAT) + DURATIONOFSTAY 
                          Diseases.of.the.genitourinary.system + Symptoms.signs.and.abnormal.clinical.and.laboratory.findings.not.elsewhere.classified + Diseases.of.the.nervous.system + Diseases.of.the.respiratory.system + Infectious.and.parasitic.diseases + Diseases.of.the.eye.and.adnexa + Diseases.of.the.sense.organs + Diseases.of.the.digestive.system + Diseases.of.the.circulatory.system + Diseases.of.the.skin.and.subcutaneous.tissue + Injury.poisoning.and.certain.other.consequences.of.external.causes + Diseases.of.the.musculoskeletal.system.and.connective.tissue + Neoplasms + Mental.and.behavioural.disorders + Factors.influencing.health.status.and.contact.with.health.services + Endocrine.nutritional.and.metabolic.diseases + Others + Diseases.of.the.ear.and.mastoid.process + Diseases.of.the.blood.and.bloodforming.organs.and.certain.disorders.involving.the.immune.mechanism + Pregnancy.childbirth.and.the.puerperium + Congenital.malformations.deformations.and.chromosomal.abnormalities + External.causes.of.morbidity.and.mortality + Certain.conditions.originating.in.the.perinatal.period
   , family=binomial(link="logit"),  data=estimation_data)
 test_Probability_class1_log <- predict(logreg_solution, type="response", newdata=test_predict_data)
-test_prediction_class_log   <- 1*as.vector(test_Probability_class1_log > .3)
+test_prediction_class_log   <- 1*as.vector(test_Probability_class1_log > .25)
 
 test101 <- cbind(test_predict_data, test_prediction_class_log)
 

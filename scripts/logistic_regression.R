@@ -59,5 +59,5 @@ test_data_long <- melt(logitresult, id="threashold")  # convert to long format
 
 ggplot(data=test_data_long,
        aes(x=threashold, y=value, colour=variable)) +
-  geom_line() + ylab("Accuracy Performance (%)") + xlab("Probability Threashold") + theme_bw()
+  geom_line() + ylab("Accuracy Performance (%)") + xlab("Probability Threshold") + labs(title = "Fig 1. Logistic regression performance") + theme_bw()
 
