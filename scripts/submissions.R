@@ -74,7 +74,8 @@ for(i in 1:4){
   }
 }
 
-submission3 <- submission3[, c(2,3,4,5,1,6:12, 57)]
+submission3 <- submission3[, c(2:6,1,7:13, 58)]
 colnames(submission3)[ncol(submission3)] <- "HOSPITALBILL"
+submission3 <- submission3[order(submission3$UID),]
 
-write.csv(submission3, "submission3_Aung_Myint_Thein.csv")
+write.csv(submission3, "submission3_Aung_Myint_Thein.csv", row.names=FALSE)

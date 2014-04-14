@@ -34,7 +34,7 @@ bills <- merge(bills, diagroupcode, by=c("DIAGNOSISGROUP"), all.x=T, sort=F)
 ############## end of bills data
 
 ############## import the predict data
-predict <- read.csv("data/1 Core Data/201403252740-Prudential_Submissions_v2.csv")
+predict <- read.csv("data/1 Core Data/201404105314-Prudential_Submissions_v3.csv")
 #predict[, "AGE"] <- 2014 - as.numeric(substr(as.character(predict[, "YMDOB"]), 1, 4))
 predict[, "AGE"] <- 2014 - predict[, "YMDOB"]
 predict[, "AGEGROUP"] <- apply(predict, 1, function(row) get.age.group(as.numeric(row["AGE"])))

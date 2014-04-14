@@ -1,0 +1,7 @@
+This is the test submission. 
+
+I used Logistic Regression to predict if a person has been to a hospital in 2013. It has hit rate 75.5%. However, more importantly, it has 49% true positive rate and 78% true negative rate.
+
+I used Linear Regression to predict the hospital bill. With the test dataset, RMSLE scores have improve to 0.94. 
+
+Details of the codes and algorithm can be available upon request.
