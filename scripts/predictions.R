@@ -10,12 +10,12 @@ trainData[, "YEAROFADM"] <- apply(trainData, 1, function(row) as.numeric(format(
 trainData[, "qutbill"] <- trainData[, "HOSPITALBILL"]^(1/4)
 trainData[, "sqrtbill"]<- trainData[, "HOSPITALBILL"]^(1/2)
 
-trainData[, "DIAGNOSISGROUPCLUSTER"] <- apply(trainData, 1, function(row) ifelse(row["DIAGNOSISGROUPCODE"] %in% c(1,2,5,7,16,17,21), "A", ifelse(row["DIAGNOSISGROUPCODE"] %in% c(4,8,11,12,13,14,18,19,23), "B", "C")))
+#trainData[, "DIAGNOSISGROUPCLUSTER"] <- apply(trainData, 1, function(row) ifelse(row["DIAGNOSISGROUPCODE"] %in% c(1,2,5,7,16,17,21), "A", ifelse(row["DIAGNOSISGROUPCODE"] %in% c(4,8,11,12,13,14,18,19,23), "B", "C")))
 
-toscale <- trainData[, c("DURATIONOFSTAY", "YEAROFADM")]
-toscale_scaled <- apply(toscale,2, function(r) {if (sd(r)!=0) res=(r-mean(r))/sd(r) else res=0*r; res})
-colnames(toscale_scaled) <- c("DURATIONOFSTAYB", "YEAROFADMB")
-trainData <- cbind(trainData, toscale_scaled)
+#toscale <- trainData[, c("DURATIONOFSTAY", "YEAROFADM")]
+#toscale_scaled <- apply(toscale,2, function(r) {if (sd(r)!=0) res=(r-mean(r))/sd(r) else res=0*r; res})
+#colnames(toscale_scaled) <- c("DURATIONOFSTAYB", "YEAROFADMB")
+#trainData <- cbind(trainData, toscale_scaled)
 
 trainData[, "Cancer.Specialist"] <- ifelse(trainData[, "TYPEOFHOSP"] == "Cancer Specialist", 1, 0)
 trainData[, "Community.Hospital"] <- ifelse(trainData[, "TYPEOFHOSP"] == "Community Hospital", 1, 0)
@@ -175,7 +175,7 @@ BILLCATCODE <- data.frame(BILLCATCODE=c(1:4), BILLCAT=unique(bills$BILLCAT))
 tesmain <- tes4[0,]
 
 ## need to test with AGE GROUP, BILL CAT total 16
-estimation_data[, "qutbill"] <- (estimation_data[, "HOSPITALBILL"])^(1/4)
+#estimation_data[, "qutbill"] <- (estimation_data[, "HOSPITALBILL"])^(1/4)
 #estimation_data[, "qutbill"] <- log(estimation_data[, "qutbill"] + 1)
 
 for(i in 1:4){
@@ -247,6 +247,72 @@ prediction4 <- predict(lm4, type="response", newdata=test_data4[test_data4$AGEGR
 tes4 <- cbind(test_data4[test_data4$AGEGROUP == 4, ], (exp(prediction4)-1)^2)
 colnames(tes4)[ncol(tes4)] <- "prediction"
 rmsle(tes4$HOSPITALBILL, tes4[,"prediction"])
+
+
+
+
+
+### ITERATION 5.3 1.049377
+BILLCATCODE <- data.frame(BILLCATCODE=c(1:4), BILLCAT=unique(bills$BILLCAT))
+tesmain <- tes4[0,]
+
+## need to test with AGE GROUP, BILL CAT total 16
+#estimation_data[, "qutbill"] <- (estimation_data[, "HOSPITALBILL"])^(1/4)
+#estimation_data[, "qutbill"] <- log(estimation_data[, "qutbill"] + 1)
+
+for(i in 1:4){
+  for(j in 1:4){
+    lm4 <- lm(qutbill ~ AGE + GENDER + DURATIONOFSTAY + YEAROFADM +
+                Cancer.Specialist + ENT + Others + Oversea.Hospital + Private.Hospital + Public.Hospital + 
+                Public.Specialist + Specialist + Surgery + Ward. + Ward.A + Ward.B + Ward.C + Ward.D + Ward.E + Ward.F + Ward.G + Ward.H + Ward.I + Ward.K + Ward.M + Ward.N + Ward.O + Ward.P +
+                Diseases.of.the.genitourinary.system + Symptoms.signs.and.abnormal.clinical.and.laboratory.findings.not.elsewhere.classified + Diseases.of.the.nervous.system + Diseases.of.the.respiratory.system + Infectious.and.parasitic.diseases + Diseases.of.the.eye.and.adnexa + Diseases.of.the.sense.organs + Diseases.of.the.digestive.system + Diseases.of.the.circulatory.system + Diseases.of.the.skin.and.subcutaneous.tissue + Injury.poisoning.and.certain.other.consequences.of.external.causes + Diseases.of.the.musculoskeletal.system.and.connective.tissue + Neoplasms + Mental.and.behavioural.disorders + Factors.influencing.health.status.and.contact.with.health.services + Endocrine.nutritional.and.metabolic.diseases + Others + Diseases.of.the.ear.and.mastoid.process + Diseases.of.the.blood.and.bloodforming.organs.and.certain.disorders.involving.the.immune.mechanism + Pregnancy.childbirth.and.the.puerperium + Congenital.malformations.deformations.and.chromosomal.abnormalities + External.causes.of.morbidity.and.mortality + Certain.conditions.originating.in.the.perinatal.period
+              , data=estimation_data[estimation_data$AGEGROUP == i & estimation_data$BILLCAT == BILLCATCODE[j,2],])
+    
+    test_data4 <- test_predict_data[test_predict_data$AGEGROUP == i & test_predict_data$BILLCAT == BILLCATCODE[j,2],]
+    
+    prediction4 <- predict(lm4, type="response", newdata=test_data4)
+    tes4 <- cbind(test_data4, (prediction4)^4)
+    colnames(tes4)[ncol(tes4)] <- "prediction"
+    rmsle(tes4$HOSPITALBILL, tes4[,"prediction"])
+    
+    tesmain <- rbind(tesmain, tes4)
+  }
+}
+
+rmsle(tesmain$HOSPITALBILL, tesmain$prediction) #0.9906317
+
+
+
+## testing with only several type of hosp
+BILLCATCODE <- data.frame(BILLCATCODE=c(1:4), BILLCAT=unique(bills$BILLCAT))
+TYPEOFHOSP <- data.frame(TYPE=c(1:13), TYPEOFHOSP=unique(test_predict_data$TYPEOFHOSP))
+tesmain <- tes4[0,]
+
+## need to test with AGE GROUP, BILL CAT total 16
+#estimation_data[, "qutbill"] <- (estimation_data[, "HOSPITALBILL"])^(1/4)
+#estimation_data[, "qutbill"] <- log(estimation_data[, "qutbill"] + 1)
+
+for(i in 1:4){
+  for(j in 1:4){
+    for(k in 1:13){
+      lm4 <- lm(qutbill ~ AGE + DURATIONOFSTAY + YEAROFADM +
+                  Ward. + Ward.A + Ward.B + Ward.C + Ward.D + Ward.E + Ward.F + Ward.G + Ward.H + Ward.I + Ward.K + Ward.M + Ward.N + Ward.O + Ward.P +
+                  Diseases.of.the.genitourinary.system + Symptoms.signs.and.abnormal.clinical.and.laboratory.findings.not.elsewhere.classified + Diseases.of.the.nervous.system + Diseases.of.the.respiratory.system + Infectious.and.parasitic.diseases + Diseases.of.the.eye.and.adnexa + Diseases.of.the.sense.organs + Diseases.of.the.digestive.system + Diseases.of.the.circulatory.system + Diseases.of.the.skin.and.subcutaneous.tissue + Injury.poisoning.and.certain.other.consequences.of.external.causes + Diseases.of.the.musculoskeletal.system.and.connective.tissue + Neoplasms + Mental.and.behavioural.disorders + Factors.influencing.health.status.and.contact.with.health.services + Endocrine.nutritional.and.metabolic.diseases + Others + Diseases.of.the.ear.and.mastoid.process + Diseases.of.the.blood.and.bloodforming.organs.and.certain.disorders.involving.the.immune.mechanism + Pregnancy.childbirth.and.the.puerperium + Congenital.malformations.deformations.and.chromosomal.abnormalities + External.causes.of.morbidity.and.mortality + Certain.conditions.originating.in.the.perinatal.period
+                , data=estimation_data[estimation_data$AGEGROUP == i & estimation_data$BILLCAT == BILLCATCODE[j,2] & estimation_data$TYPEOFHOSP == TYPEOFHOSP[k,2],])
+      
+      test_data4 <- test_predict_data[test_predict_data$AGEGROUP == i & test_predict_data$BILLCAT == BILLCATCODE[j,2] & test_predict_data$TYPEOFHOSP == TYPEOFHOSP[k,2],]
+      
+      prediction4 <- predict(lm4, type="response", newdata=test_data4)
+      tes4 <- cbind(test_data4, (prediction4)^4)
+      colnames(tes4)[ncol(tes4)] <- "prediction"
+      rmsle(tes4$HOSPITALBILL, tes4[,"prediction"])
+      
+      tesmain <- rbind(tesmain, tes4)
+    }
+  }
+}
+
+rmsle(tesmain$HOSPITALBILL, tesmain$prediction) #0.9906317
 
 
 ############################ testing for ADM2013

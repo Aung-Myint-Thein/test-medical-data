@@ -31,6 +31,8 @@ bills[, "DIAGNOSISGROUP"] <- apply(bills, 1, function(row) get.diagnosis.group(a
 diagroupcode <- data.frame(DIAGNOSISGROUPCODE=c(1:23), DIAGNOSISGROUP=unique(bills$DIAGNOSISGROUP))
 bills <- merge(bills, diagroupcode, by=c("DIAGNOSISGROUP"), all.x=T, sort=F)
 
+bills[, "qutbill"] <- (bills[, "HOSPITALBILL"])^(1/4)
+
 ############## end of bills data
 
 ############## import the predict data

@@ -7,6 +7,4 @@ I used Linear Regression to predict the hospital bill. With the test dataset, RM
 Details of the codes and algorithm can be available upon request.
 
 
-> summary(submission4$prediction)
-    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-    1.84   703.90  1260.00  1836.00  1914.00 92480.00 
+ggplot(trainData[trainData$HOSPITALBILL<20000,], aes(x=factor(TYPEOFHOSP), y=qutbill)) + geom_boxplot()
