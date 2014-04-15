@@ -1,4 +1,8 @@
 trainData <- aggregate(HOSPITALBILL ~ ID + AGE + GENDER + HRN + HOSPITAL + DIAGNOSISCODE  + BILLCAT + DURATIONOFSTAY + TYPEOFHOSP , bills, mean)
+
+## testing to remove the outlier
+#trainData <- trainData[trainData$HOSPITALBILL<50000,]
+
 trainData <- trainData[order(trainData$HRN),]
 
 trainData <- merge(trainData, unique(bills[, c("ID", "HRN", "DIAGNOSISGROUP", "AGEGROUP", "DATEOFADM", "DIAGNOSISGROUPCODE", "ADM2013", "WARDTYPE")]), by=c("ID", "HRN"), sort=F, all.x=T)
@@ -171,6 +175,9 @@ BILLCATCODE <- data.frame(BILLCATCODE=c(1:4), BILLCAT=unique(bills$BILLCAT))
 tesmain <- tes4[0,]
 
 ## need to test with AGE GROUP, BILL CAT total 16
+estimation_data[, "qutbill"] <- (estimation_data[, "HOSPITALBILL"])^(1/4)
+#estimation_data[, "qutbill"] <- log(estimation_data[, "qutbill"] + 1)
+
 for(i in 1:4){
   for(j in 1:4){
     lm4 <- lm(qutbill ~ AGE + GENDER + DURATIONOFSTAY + YEAROFADM +
@@ -222,6 +229,24 @@ tes4 <- cbind(test_data4[test_data4$AGEGROUP == 4, ], (prediction4)^4)
 colnames(tes4)[ncol(tes4)] <- "prediction"
 rmsle(tes4$HOSPITALBILL, tes4[,"prediction"])
 
+
+## log
+estimation_data[, "qutbill"] <- sqrt(estimation_data[, "HOSPITALBILL"])
+estimation_data[, "qutbill"] <- log(estimation_data[, "qutbill"] + 1)
+
+
+lm4 <- lm(qutbill ~ AGE + GENDER + factor(BILLCAT) + DURATIONOFSTAY + YEAROFADM +
+            Cancer.Specialist + Community.Hospital + Dental + ENT + Eye + Kidney + Others + Oversea.Hospital + Private.Hospital + Public.Hospital + 
+            Public.Specialist + Specialist + Surgery + Ward. + Ward.A + Ward.B + Ward.C + Ward.D + Ward.E + Ward.F + Ward.G + Ward.H + Ward.I + Ward.K + Ward.M + Ward.N + Ward.O + Ward.P +
+            Diseases.of.the.genitourinary.system + Symptoms.signs.and.abnormal.clinical.and.laboratory.findings.not.elsewhere.classified + Diseases.of.the.nervous.system + Diseases.of.the.respiratory.system + Infectious.and.parasitic.diseases + Diseases.of.the.eye.and.adnexa + Diseases.of.the.sense.organs + Diseases.of.the.digestive.system + Diseases.of.the.circulatory.system + Diseases.of.the.skin.and.subcutaneous.tissue + Injury.poisoning.and.certain.other.consequences.of.external.causes + Diseases.of.the.musculoskeletal.system.and.connective.tissue + Neoplasms + Mental.and.behavioural.disorders + Factors.influencing.health.status.and.contact.with.health.services + Endocrine.nutritional.and.metabolic.diseases + Others + Diseases.of.the.ear.and.mastoid.process + Diseases.of.the.blood.and.bloodforming.organs.and.certain.disorders.involving.the.immune.mechanism + Pregnancy.childbirth.and.the.puerperium + Congenital.malformations.deformations.and.chromosomal.abnormalities + External.causes.of.morbidity.and.mortality + Certain.conditions.originating.in.the.perinatal.period
+          , data=estimation_data[estimation_data$AGEGROUP == 4,])
+
+test_data4 <- test_predict_data[test_predict_data$AGEGROUP == 4,]
+
+prediction4 <- predict(lm4, type="response", newdata=test_data4[test_data4$AGEGROUP == 4,])
+tes4 <- cbind(test_data4[test_data4$AGEGROUP == 4, ], (exp(prediction4)-1)^2)
+colnames(tes4)[ncol(tes4)] <- "prediction"
+rmsle(tes4$HOSPITALBILL, tes4[,"prediction"])
 
 
 ############################ testing for ADM2013
