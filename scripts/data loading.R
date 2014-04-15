@@ -69,6 +69,12 @@ for(i in 1:nrow(typeofhospcode)){
   predict[, variable.name] <- ifelse(predict[, "TYPEOFHOSP"] == as.character(typeofhospcode[i,2]), 1, 0)
 }
 
+wardtypes <- data.frame(no=c(1:15),WARDTYPE=union(sort(unique(bills$WARDTYPE)), sort(unique(predict$WARDTYPE))))
+
+for(i in 1:nrow(wardtypes)){
+  variable.name <- paste("Ward.", as.character(wardtypes[i,2]), sep="")
+  predict[, variable.name] <- ifelse(predict[, "WARDTYPE"] == as.character(wardtypes[i,2]), 1, 0)
+}
 
 ############## end of predict data
 
