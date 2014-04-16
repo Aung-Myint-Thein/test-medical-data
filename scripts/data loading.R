@@ -21,7 +21,7 @@ bills <- bills[, !names(bills) %in% c("cleaned")]
 ## sort by ID and HRN
 bills <- bills[order(bills$ID, bills$HRN),]
 
-hospitals <- read.csv("hospitals.csv")
+hospitals <- read.csv("hospitals2.csv")
 bills <- merge(bills, hospitals, by="HOSPITAL", all.x=T, sort=F)
 
 ICD9  <- read.csv("data/ICD9.csv", stringsAsFactors=F)
@@ -62,7 +62,7 @@ for(i in 1:nrow(diagroupcode)){
   predict[, variable.name] <- ifelse(predict[, "DIAGNOSISGROUP"] == as.character(diagroupcode[i,2]), 1, 0)
 }
 
-typeofhospcode <- data.frame(typeofhospcode=c(1:13), TYPEOFHOSP=unique(hospitals$TYPEOFHOSP))
+typeofhospcode <- data.frame(typeofhospcode=c(1:9), TYPEOFHOSP=unique(hospitals$TYPEOFHOSP))
 
 for(i in 1:nrow(typeofhospcode)){
   variable.name <- gsub(" ", ".", as.character(typeofhospcode[i,2]))

@@ -1,11 +1,13 @@
-trainData <- aggregate(HOSPITALBILL ~ ID + AGE + GENDER + HRN + HOSPITAL + DIAGNOSISCODE  + BILLCAT + DURATIONOFSTAY + TYPEOFHOSP , bills, mean)
+#trainData <- aggregate(HOSPITALBILL ~ ID + AGE + GENDER + HRN + HOSPITAL + DIAGNOSISCODE  + BILLCAT + DURATIONOFSTAY + TYPEOFHOSP , bills, mean)
+trainData <- aggregate(HOSPITALBILL ~ ID + AGE + GENDER + HRN + HOSPITAL + DIAGNOSISCODE  + BILLCAT + DURATIONOFSTAY + TYPEOFHOSP + WARDTYPE , bills, mean)
 
 ## testing to remove the outlier
 #trainData <- trainData[trainData$HOSPITALBILL<50000,]
 
 trainData <- trainData[order(trainData$HRN),]
 
-trainData <- merge(trainData, unique(bills[, c("ID", "HRN", "DIAGNOSISGROUP", "AGEGROUP", "DATEOFADM", "DIAGNOSISGROUPCODE", "ADM2013", "WARDTYPE")]), by=c("ID", "HRN"), sort=F, all.x=T)
+#trainData <- merge(trainData, unique(bills[, c("ID", "HRN", "DIAGNOSISGROUP", "AGEGROUP", "DATEOFADM", "DIAGNOSISGROUPCODE", "ADM2013", "WARDTYPE")]), by=c("ID", "HRN"), sort=F, all.x=T)
+trainData <- merge(trainData, unique(bills[, c("ID", "HRN", "DIAGNOSISGROUP", "AGEGROUP", "DATEOFADM", "DIAGNOSISGROUPCODE", "ADM2013", "WARDTYPE")]), by=c("ID", "HRN", "WARDTYPE"), sort=F, all.x=T)
 trainData[, "YEAROFADM"] <- apply(trainData, 1, function(row) as.numeric(format(as.Date(row["DATEOFADM"], "%d/%m/%Y"), "%Y")))
 trainData[, "qutbill"] <- trainData[, "HOSPITALBILL"]^(1/4)
 trainData[, "sqrtbill"]<- trainData[, "HOSPITALBILL"]^(1/2)
@@ -254,7 +256,7 @@ rmsle(tes4$HOSPITALBILL, tes4[,"prediction"])
 
 ### ITERATION 5.3 1.049377
 BILLCATCODE <- data.frame(BILLCATCODE=c(1:4), BILLCAT=unique(bills$BILLCAT))
-tesmain <- tes4[0,]
+tesmain <- data.frame()
 
 ## need to test with AGE GROUP, BILL CAT total 16
 #estimation_data[, "qutbill"] <- (estimation_data[, "HOSPITALBILL"])^(1/4)
@@ -262,7 +264,7 @@ tesmain <- tes4[0,]
 
 for(i in 1:4){
   for(j in 1:4){
-    lm4 <- lm(qutbill ~ AGE + GENDER + DURATIONOFSTAY + YEAROFADM +
+    lm4 <- lm(qutbill ~ AGE + GENDER + DURATIONOFSTAY + YEAROFADM + AGE*GENDER + GENDER*DURATIONOFSTAY + 
                 Cancer.Specialist + ENT + Others + Oversea.Hospital + Private.Hospital + Public.Hospital + 
                 Public.Specialist + Specialist + Surgery + Ward. + Ward.A + Ward.B + Ward.C + Ward.D + Ward.E + Ward.F + Ward.G + Ward.H + Ward.I + Ward.K + Ward.M + Ward.N + Ward.O + Ward.P +
                 Diseases.of.the.genitourinary.system + Symptoms.signs.and.abnormal.clinical.and.laboratory.findings.not.elsewhere.classified + Diseases.of.the.nervous.system + Diseases.of.the.respiratory.system + Infectious.and.parasitic.diseases + Diseases.of.the.eye.and.adnexa + Diseases.of.the.sense.organs + Diseases.of.the.digestive.system + Diseases.of.the.circulatory.system + Diseases.of.the.skin.and.subcutaneous.tissue + Injury.poisoning.and.certain.other.consequences.of.external.causes + Diseases.of.the.musculoskeletal.system.and.connective.tissue + Neoplasms + Mental.and.behavioural.disorders + Factors.influencing.health.status.and.contact.with.health.services + Endocrine.nutritional.and.metabolic.diseases + Others + Diseases.of.the.ear.and.mastoid.process + Diseases.of.the.blood.and.bloodforming.organs.and.certain.disorders.involving.the.immune.mechanism + Pregnancy.childbirth.and.the.puerperium + Congenital.malformations.deformations.and.chromosomal.abnormalities + External.causes.of.morbidity.and.mortality + Certain.conditions.originating.in.the.perinatal.period
@@ -279,7 +281,15 @@ for(i in 1:4){
   }
 }
 
-rmsle(tesmain$HOSPITALBILL, tesmain$prediction) #0.9906317
+rmsle(tesmain$HOSPITALBILL, tesmain$prediction) 
+
+## these are with old trainData
+# 16 groups, ward types 0.9725601
+# 16 groups, ward types, AGE*GENDER 0.9703782
+# 16 groups, ward types, AGE*GENDER + AGE*DURATIONOFSTAY 0.9705378
+# 16 groups, ward types, AGE*GENDER + AGE*DURATIONOFSTAY + GENDER*DURATIONOFSTAY 0.9707111
+# 16 groups, ward types, AGE*GENDER + GENDER*DURATIONOFSTAY 0.9701647
+
 
 
 

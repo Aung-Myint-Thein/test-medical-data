@@ -8,3 +8,9 @@ Details of the codes and algorithm can be available upon request.
 
 
 ggplot(trainData[trainData$HOSPITALBILL<20000,], aes(x=factor(TYPEOFHOSP), y=qutbill)) + geom_boxplot()
+
+Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+     0.41    637.60   1193.00   1802.00   1873.00 181300.00 
+
+  Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    0.0   577.1  1067.0  1680.0  1755.0 62930.0
