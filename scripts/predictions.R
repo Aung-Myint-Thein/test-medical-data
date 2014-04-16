@@ -260,7 +260,7 @@ tesmain <- data.frame()
 
 ## need to test with AGE GROUP, BILL CAT total 16
 #estimation_data[, "qutbill"] <- (estimation_data[, "HOSPITALBILL"])^(1/4)
-#estimation_data[, "qutbill"] <- log(estimation_data[, "qutbill"] + 1)
+estimation_data[, "qutbill"] <- log(estimation_data[, "HOSPITALBILL"]+1)
 
 for(i in 1:4){
   for(j in 1:4){
@@ -273,7 +273,8 @@ for(i in 1:4){
     test_data4 <- test_predict_data[test_predict_data$AGEGROUP == i & test_predict_data$BILLCAT == BILLCATCODE[j,2],]
     
     prediction4 <- predict(lm4, type="response", newdata=test_data4)
-    tes4 <- cbind(test_data4, (prediction4)^4)
+    #tes4 <- cbind(test_data4, (prediction4)^4)
+    tes4 <- cbind(test_data4, exp(prediction4)-1)
     colnames(tes4)[ncol(tes4)] <- "prediction"
     rmsle(tes4$HOSPITALBILL, tes4[,"prediction"])
     
