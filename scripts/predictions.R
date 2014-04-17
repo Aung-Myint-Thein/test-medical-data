@@ -10,7 +10,7 @@ trainData <- trainData[order(trainData$HRN),]
 trainData <- merge(trainData, unique(bills[, c("ID", "HRN", "DIAGNOSISGROUP", "AGEGROUP", "DATEOFADM", "DIAGNOSISGROUPCODE", "ADM2013", "WARDTYPE")]), by=c("ID", "HRN", "WARDTYPE"), sort=F, all.x=T)
 trainData[, "YEAROFADM"] <- apply(trainData, 1, function(row) as.numeric(format(as.Date(row["DATEOFADM"], "%d/%m/%Y"), "%Y")))
 trainData[, "qutbill"] <- trainData[, "HOSPITALBILL"]^(1/4)
-trainData[, "sqrtbill"]<- trainData[, "HOSPITALBILL"]^(1/2)
+trainData[, "logbill"] <- log(trainData[, "HOSPITALBILL"]+1)
 
 #trainData[, "DIAGNOSISGROUPCLUSTER"] <- apply(trainData, 1, function(row) ifelse(row["DIAGNOSISGROUPCODE"] %in% c(1,2,5,7,16,17,21), "A", ifelse(row["DIAGNOSISGROUPCODE"] %in% c(4,8,11,12,13,14,18,19,23), "B", "C")))
 
@@ -58,7 +58,7 @@ ggplot(trainData[trainData$HOSPITALBILL<50000,], aes(x=factor(DIAGNOSISGROUPCODE
 
 set.seed(123442323)
 
-estimation_data_ids <- sample.int(nrow(trainData), 12000)
+estimation_data_ids <- sample.int(nrow(trainData), 14000)
 estimation_data <- trainData[estimation_data_ids, ]
 
 non_estimation_data <- setdiff(1:nrow(trainData),estimation_data_ids)
@@ -174,7 +174,7 @@ rmsle(tesmain3.1.1$HOSPITALBILL, tesmain3.1.1$preMin) ## 1.049124
 
 ### ITERATION 4
 BILLCATCODE <- data.frame(BILLCATCODE=c(1:4), BILLCAT=unique(bills$BILLCAT))
-tesmain <- tes4[0,]
+tesmain <- data.frame()
 
 ## need to test with AGE GROUP, BILL CAT total 16
 #estimation_data[, "qutbill"] <- (estimation_data[, "HOSPITALBILL"])^(1/4)
@@ -260,7 +260,7 @@ tesmain <- data.frame()
 
 ## need to test with AGE GROUP, BILL CAT total 16
 #estimation_data[, "qutbill"] <- (estimation_data[, "HOSPITALBILL"])^(1/4)
-estimation_data[, "qutbill"] <- log(estimation_data[, "HOSPITALBILL"]+1)
+#estimation_data[, "qutbill"] <- log(estimation_data[, "HOSPITALBILL"]+1)
 
 for(i in 1:4){
   for(j in 1:4){

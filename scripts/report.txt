@@ -14,3 +14,15 @@ Min.   1st Qu.    Median      Mean   3rd Qu.      Max.
 
   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
     0.0   577.1  1067.0  1680.0  1755.0 62930.0
+
+17 Apr test 2
+ Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+     0.0    577.9   1095.0   1882.0   1812.0 516500.0
+
+table(bills[bills$HOSPITALBILL == 0, "WARDTYPE"])
+
+        A    B    C    D    E    F    G    H    I    K    M    N 
+3687   22    9   34   13   12    0   14    6    0    0    0    0 
+
+p <- ggplot(data=trainData[trainData$WARDTYPE=="",], aes(factor(BILLCAT), logbill))
+p + geom_boxplot(aes(fill = factor(AGEGROUP)))
