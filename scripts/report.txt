@@ -19,6 +19,16 @@ Min.   1st Qu.    Median      Mean   3rd Qu.      Max.
  Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
      0.0    577.9   1095.0   1882.0   1812.0 516500.0
 
+ Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+   42.36   551.10  1006.00  1634.00  1730.00 93060.00
+
+summary(submission4$HOSPITALBILL)
+    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+     0.0    526.7    989.8   1804.0   1787.0 825500.0 
+
+Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+    42.29    547.50    992.90   1621.00   1665.00 105100.00
+
 table(bills[bills$HOSPITALBILL == 0, "WARDTYPE"])
 
         A    B    C    D    E    F    G    H    I    K    M    N 
@@ -26,3 +36,12 @@ table(bills[bills$HOSPITALBILL == 0, "WARDTYPE"])
 
 p <- ggplot(data=trainData[trainData$WARDTYPE=="",], aes(factor(BILLCAT), logbill))
 p + geom_boxplot(aes(fill = factor(AGEGROUP)))
+
+
+
+
+DURATIONOFSTAY*Cancer.Specialist + DURATIONOFSTAY*Community.Hospital + DURATIONOFSTAY*Dental + DURATIONOFSTAY*ENT + DURATIONOFSTAY*Eye + DURATIONOFSTAY*Kidney + DURATIONOFSTAY*Others + DURATIONOFSTAY*Oversea.Hospital + 
+DURATIONOFSTAY*Private.Hospital + DURATIONOFSTAY*Public.Hospital + DURATIONOFSTAY*Public.Specialist + DURATIONOFSTAY*Specialist + DURATIONOFSTAY*Surgery + 
+
+DURATIONOFSTAY*Ward. + DURATIONOFSTAY*Ward.A + 
+DURATIONOFSTAY*Ward.B + DURATIONOFSTAY*Ward.C + DURATIONOFSTAY*Ward.D + DURATIONOFSTAY*Ward.E + DURATIONOFSTAY*Ward.F + DURATIONOFSTAY*Ward.G + DURATIONOFSTAY*Ward.H + DURATIONOFSTAY*Ward.I + DURATIONOFSTAY*Ward.K + DURATIONOFSTAY*Ward.M + DURATIONOFSTAY*Ward.N + DURATIONOFSTAY*Ward.O + DURATIONOFSTAY*Ward.P +

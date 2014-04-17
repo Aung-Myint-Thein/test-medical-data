@@ -3,9 +3,24 @@ set.seed(123442323)
 source("scripts/functions.R")
 
 ############# import the bills data
-bills <- read.csv("data/1 Core Data/Hospital Bills Final Set v2.csv")
-bills <- bills[!is.na(bills$HOSPITALBILL), ]
-bills <- bills[!bills$ID=="C080032649",]
+
+#bills <- read.csv("data/1 Core Data/Hospital Bills Final Set v2.csv")
+#bills <- bills[!is.na(bills$HOSPITALBILL), ]
+#bills <- bills[!bills$ID=="C080032649",]
+
+#bills <- bills[order(bills$ID, bills$HRN, bills$HOSPITALBILL, decreasing=T),]
+#bills[1, "ItemNo"] <- 1
+
+#for(i in 2:nrow(bills)){
+#  if(bills[i, "ID"] == bills[i-1, "ID"] & bills[i, "HRN"] == bills[i-1, "HRN"]){
+#    bills[i, "ItemNo"] <- bills[i-1, "ItemNo"] + 1
+#  }else{
+#    bills[i, "ItemNo"] <- 1
+#  }
+#}
+
+load("bills.Rdata")
+
 bills[, "AGE"] <- 2014 - bills[, "YMDOB"]
 bills[, "AGEGROUP"] <- apply(bills, 1, function(row) get.age.group(as.numeric(row["AGE"])))
 bills[, "DURATIONOFSTAY"] <- as.numeric(difftime(as.Date(bills[, "DATEDISCHARGE"], "%d/%m/%Y"), as.Date(bills[, "DATEOFADM"], "%d/%m/%Y"), units="days"))
@@ -22,6 +37,7 @@ bills <- bills[, !names(bills) %in% c("cleaned")]
 bills <- bills[order(bills$ID, bills$HRN),]
 
 hospitals <- read.csv("hospitals.csv")
+hospitals4 <- read.csv("hospitals4.csv")
 bills <- merge(bills, hospitals, by="HOSPITAL", all.x=T, sort=F)
 
 ICD9  <- read.csv("data/ICD9.csv", stringsAsFactors=F)
@@ -36,7 +52,21 @@ bills[, "qutbill"] <- (bills[, "HOSPITALBILL"])^(1/4)
 ############## end of bills data
 
 ############## import the predict data
-predict <- read.csv("data/1 Core Data/201404105314-Prudential_Submissions_v3.csv")
+#predict <- read.csv("data/1 Core Data/201404105314-Prudential_Submissions_v3.csv")
+
+#predict <- predict[order(predict$ID, predict$HRN, decreasing=T),]
+#predict[1, "ItemNo"] <- 1
+#
+#for(i in 2:nrow(predict)){
+#  if(predict[i, "ID"] == predict[i-1, "ID"] & predict[i, "HRN"] == predict[i-1, "HRN"]){
+#    predict[i, "ItemNo"] <- predict[i-1, "ItemNo"] + 1
+#  }else{
+#    predict[i, "ItemNo"] <- 1
+#  }
+#}
+
+load("predict.Rdata")
+
 #predict[, "AGE"] <- 2014 - as.numeric(substr(as.character(predict[, "YMDOB"]), 1, 4))
 predict[, "AGE"] <- 2014 - predict[, "YMDOB"]
 predict[, "AGEGROUP"] <- apply(predict, 1, function(row) get.age.group(as.numeric(row["AGE"])))
@@ -77,6 +107,11 @@ for(i in 1:nrow(wardtypes)){
   variable.name <- paste("Ward.", as.character(wardtypes[i,2]), sep="")
   predict[, variable.name] <- ifelse(predict[, "WARDTYPE"] == as.character(wardtypes[i,2]), 1, 0)
 }
+
+predict <- merge(predict, hospitals4, by="HOSPITAL", all.x=T)
+
+predict[, "isPrivate"] <- apply(predict, 1, function(row) ifelse(row["TYPEOFHOSPB"] == "Private Hospital", 1, 0))
+
 
 ############## end of predict data
 

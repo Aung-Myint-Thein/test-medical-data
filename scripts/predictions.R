@@ -1,6 +1,11 @@
 #trainData <- aggregate(HOSPITALBILL ~ ID + AGE + GENDER + HRN + HOSPITAL + DIAGNOSISCODE  + BILLCAT + DURATIONOFSTAY + TYPEOFHOSP , bills, mean)
 trainData <- aggregate(HOSPITALBILL ~ ID + AGE + GENDER + HRN + HOSPITAL + DIAGNOSISCODE  + BILLCAT + DURATIONOFSTAY + TYPEOFHOSP + WARDTYPE , bills, mean)
 
+trainData2 <- aggregate(ItemNo ~ ID + AGE + GENDER + HRN + HOSPITAL + DIAGNOSISCODE  + BILLCAT + DURATIONOFSTAY + TYPEOFHOSP + WARDTYPE , bills, max)
+
+trainData <- cbind(trainData, trainData2[, "ItemNo"])
+colnames(trainData)[12] <- "ItemNo"
+
 ## testing to remove the outlier
 #trainData <- trainData[trainData$HOSPITALBILL<50000,]
 
@@ -44,6 +49,10 @@ for(i in 1:nrow(wardtypes)){
   variable.name <- paste("Ward.", as.character(wardtypes[i,2]), sep="")
   trainData[, variable.name] <- ifelse(trainData[, "WARDTYPE"] == as.character(wardtypes[i,2]), 1, 0)
 }
+
+trainData <- merge(trainData, hospitals4, by="HOSPITAL", all.x=T)
+
+trainData[, "isPrivate"] <- apply(trainData, 1, function(row) ifelse(row["TYPEOFHOSPB"] == "Private Hospital", 1, 0))
 
 ## for formula
 string <- ""
