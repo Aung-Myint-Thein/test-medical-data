@@ -1,4 +1,4 @@
-### testing with association
+### testing with association with SYW
 ## testing 1 : if trainData wardtype == "", logbill = log(281) RMSLE 1.52757
 BILLCATCODE <- data.frame(BILLCATCODE=c(1:4), BILLCAT=unique(bills$BILLCAT))
 submission4 <- data.frame()
