@@ -36,7 +36,7 @@ bills <- bills[, !names(bills) %in% c("cleaned")]
 ## sort by ID and HRN
 bills <- bills[order(bills$ID, bills$HRN),]
 
-hospitals <- read.csv("hospitals2.csv")
+hospitals <- read.csv("hospitals.csv")
 hospitals4 <- read.csv("hospitals4.csv")
 bills <- merge(bills, hospitals, by="HOSPITAL", all.x=T, sort=F)
 
@@ -52,6 +52,8 @@ bills[, "logbill"] <- (log(bills[, "HOSPITALBILL"]+1))
 
 bills <- merge(bills, hospitals4, by="HOSPITAL", all.x=T, sort=FALSE)
 bills[, "isPrivate"] <- apply(bills, 1, function(row) ifelse(row["TYPEOFHOSPB"] == "Private Hospital", 1, 0))
+
+bills[, "AVEPERDAY"] <- apply(bills, 1, function(row) ifelse(as.numeric(row["isPrivate"]) == 1, 3075, 961.5))
 
 ############## end of bills data
 
@@ -96,7 +98,7 @@ for(i in 1:nrow(diagroupcode)){
   predict[, variable.name] <- ifelse(predict[, "DIAGNOSISGROUP"] == as.character(diagroupcode[i,2]), 1, 0)
 }
 
-typeofhospcode <- data.frame(typeofhospcode=c(1:9), TYPEOFHOSP=unique(hospitals$TYPEOFHOSP))
+typeofhospcode <- data.frame(typeofhospcode=c(1:13), TYPEOFHOSP=unique(hospitals$TYPEOFHOSP))
 
 for(i in 1:nrow(typeofhospcode)){
   variable.name <- gsub(" ", ".", as.character(typeofhospcode[i,2]))
@@ -115,7 +117,7 @@ for(i in 1:nrow(wardtypes)){
 predict <- merge(predict, hospitals4, by="HOSPITAL", all.x=T)
 predict[, "isPrivate"] <- apply(predict, 1, function(row) ifelse(row["TYPEOFHOSPB"] == "Private Hospital", 1, 0))
 
-
+predict[, "AVEPERDAY"] <- apply(predict, 1, function(row) ifelse(as.numeric(row["isPrivate"]) == 1, 3075, 961.5))
 ############## end of predict data
 
 ############## Preparation for classification exercise
