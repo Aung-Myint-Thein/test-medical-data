@@ -267,8 +267,9 @@ qplot(factor(AGEGROUP), HOSPITALBILL, data=bills, geom=c("boxplot"),
       fill=factor(AGEGROUP), xlab="", ylab="Bill") 
 
 ## according to age group, we can see how the trend of the bills 
-LVGK <- ggplot(data=trainData[trainData$HOSPITALBILL<50000,], aes(x=AGE, y=qutbill))
-LVGK + geom_point(shape = 1, alpha = .8) + facet_grid(.~ AGEGROUP) + geom_smooth(method="lm")
+LVGK <- ggplot(data=trainData[trainData$HOSPITALBILL<50000,], aes(x=AGE, y=logbill))
+LVGK + geom_point(aes( alpha = .1)) + facet_grid(.~ AGEGROUP) + geom_smooth(method="lm") +
+  ylab("Log (HOSPITALBILL + 1)") + xlab("AGE") + labs(title = "Fig 5. Log transformed bills distribution across age") + theme_bw()
 
 LVGK + geom_point(shape = 1, alpha = .8) + facet_grid(.~ code) + geom_smooth(method="lm")
 
@@ -279,12 +280,34 @@ ggplot(trainData[trainData$HOSPITALBILL<50000,], aes(x=factor(DIAGNOSISGROUPCODE
 ggplot(trainData[trainData$HOSPITALBILL<50000,], aes(x=factor(BILLCAT), y=qutbill)) + geom_boxplot()
 
 
+## fig 4
+hist(trainData$logbillb, xlab="Log (HOSPITALBILL + 1)", 
+     main="Fig 4. Histogram of log transformed hospital bill (after treatment)")
+
+## fig 2
+hist(bills$HOSPITALBILL, xlab="HOSPITALBILL", 
+     main="Fig 2. Histogram of hospital bill")
+
+## fig 4
+hist(trainData$logbill, xlab="Log (HOSPITALBILL + 1)", 
+     main="Fig 3. Histogram of log transformed hospital bill (before treatment)")
+
+
+## fig 7
+hist(log(submission4$HOSPITALBILL+1), xlab="Linear regression result : Log (HOSPITALBILL + 1)", 
+     main="Fig 7. Histogram of regression results")
+
+## fig 8
+hist(submission4$HOSPITALBILL, xlab="predicted HOSPITALBILL", 
+     main="Fig 8. Histogram of predicted HOSPITALBILL")
+
 p <- ggplot(data=trainData[trainData$HOSPITALBILL<50000,], aes(x=AGE, y=qutbill, group=HRN))
 p + geom_line()
 
 ## this plot can be used for report
-p <- ggplot(data=trainData[trainData$HOSPITALBILL<50000,], aes(factor(BILLCAT), qutbill))
-p + geom_boxplot(aes(fill = factor(AGEGROUP)))
+p <- ggplot(data=trainData, aes(factor(BILLCAT), logbillb))
+p + geom_boxplot(aes(fill = factor(AGEGROUP)))+
+  ylab("Log (HOSPITALBILL + 1)") + xlab("BILLCAT") + labs(title = "Fig 6. Log transformed bills distribution across age by bill category") + theme_bw()
 
 ## H cluster to see how many clusters should we see
 Hierarchical_Cluster_distances <- dist(trainData[, c(3:5,7:9,14)], method="euclidean")
