@@ -48,6 +48,7 @@ diagroupcode <- data.frame(DIAGNOSISGROUPCODE=c(1:23), DIAGNOSISGROUP=unique(bil
 bills <- merge(bills, diagroupcode, by=c("DIAGNOSISGROUP"), all.x=T, sort=F)
 
 bills[, "qutbill"] <- (bills[, "HOSPITALBILL"])^(1/4)
+bills[, "logbill"] <- (log(bills[, "HOSPITALBILL"]+1))
 
 ############## end of bills data
 
