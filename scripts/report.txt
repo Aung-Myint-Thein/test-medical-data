@@ -38,7 +38,8 @@ p <- ggplot(data=trainData[trainData$WARDTYPE=="",], aes(factor(BILLCAT), logbil
 p + geom_boxplot(aes(fill = factor(AGEGROUP)))
 
 
-
+ Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+      0.0     646.9    1183.0    2628.0    2077.0 3160000.0 
 
 DURATIONOFSTAY*Cancer.Specialist + DURATIONOFSTAY*Community.Hospital + DURATIONOFSTAY*Dental + DURATIONOFSTAY*ENT + DURATIONOFSTAY*Eye + DURATIONOFSTAY*Kidney + DURATIONOFSTAY*Others + DURATIONOFSTAY*Oversea.Hospital + 
 DURATIONOFSTAY*Private.Hospital + DURATIONOFSTAY*Public.Hospital + DURATIONOFSTAY*Public.Specialist + DURATIONOFSTAY*Specialist + DURATIONOFSTAY*Surgery + 

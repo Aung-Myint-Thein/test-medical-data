@@ -1,18 +1,18 @@
-#trainData <- aggregate(HOSPITALBILL ~ ID + AGE + GENDER + HRN + HOSPITAL + DIAGNOSISCODE  + BILLCAT + DURATIONOFSTAY + TYPEOFHOSP , bills, mean)
-trainData <- aggregate(HOSPITALBILL ~ ID + AGE + GENDER + HRN + HOSPITAL + DIAGNOSISCODE  + BILLCAT + DURATIONOFSTAY + TYPEOFHOSP + WARDTYPE , bills, mean)
+trainData <- aggregate(HOSPITALBILL ~ ID + AGE + GENDER + HRN + HOSPITAL + DIAGNOSISCODE  + BILLCAT + DURATIONOFSTAY + TYPEOFHOSP , bills, mean)
+#trainData <- aggregate(HOSPITALBILL ~ ID + AGE + GENDER + HRN + HOSPITAL + DIAGNOSISCODE  + BILLCAT + DURATIONOFSTAY + TYPEOFHOSP + WARDTYPE , bills, mean)
 
-trainData2 <- aggregate(ItemNo ~ ID + AGE + GENDER + HRN + HOSPITAL + DIAGNOSISCODE  + BILLCAT + DURATIONOFSTAY + TYPEOFHOSP + WARDTYPE , bills, max)
+#trainData2 <- aggregate(ItemNo ~ ID + AGE + GENDER + HRN + HOSPITAL + DIAGNOSISCODE  + BILLCAT + DURATIONOFSTAY + TYPEOFHOSP + WARDTYPE , bills, max)
 
-trainData <- cbind(trainData, trainData2[, "ItemNo"])
-colnames(trainData)[12] <- "ItemNo"
+#trainData <- cbind(trainData, trainData2[, "ItemNo"])
+#colnames(trainData)[12] <- "ItemNo"
 
 ## testing to remove the outlier
 #trainData <- trainData[trainData$HOSPITALBILL<50000,]
 
 trainData <- trainData[order(trainData$HRN),]
 
-#trainData <- merge(trainData, unique(bills[, c("ID", "HRN", "DIAGNOSISGROUP", "AGEGROUP", "DATEOFADM", "DIAGNOSISGROUPCODE", "ADM2013", "WARDTYPE")]), by=c("ID", "HRN"), sort=F, all.x=T)
-trainData <- merge(trainData, unique(bills[, c("ID", "HRN", "DIAGNOSISGROUP", "AGEGROUP", "DATEOFADM", "DIAGNOSISGROUPCODE", "ADM2013", "WARDTYPE")]), by=c("ID", "HRN", "WARDTYPE"), sort=F, all.x=T)
+trainData <- merge(trainData, unique(bills[, c("ID", "HRN", "DIAGNOSISGROUP", "AGEGROUP", "DATEOFADM", "DIAGNOSISGROUPCODE", "ADM2013", "WARDTYPE")]), by=c("ID", "HRN"), sort=F, all.x=T)
+#trainData <- merge(trainData, unique(bills[, c("ID", "HRN", "DIAGNOSISGROUP", "AGEGROUP", "DATEOFADM", "DIAGNOSISGROUPCODE", "ADM2013", "WARDTYPE")]), by=c("ID", "HRN", "WARDTYPE"), sort=F, all.x=T)
 trainData[, "YEAROFADM"] <- apply(trainData, 1, function(row) as.numeric(format(as.Date(row["DATEOFADM"], "%d/%m/%Y"), "%Y")))
 trainData[, "qutbill"] <- trainData[, "HOSPITALBILL"]^(1/4)
 trainData[, "logbill"] <- log(trainData[, "HOSPITALBILL"]+1)
@@ -67,7 +67,7 @@ ggplot(trainData[trainData$HOSPITALBILL<50000,], aes(x=factor(DIAGNOSISGROUPCODE
 
 set.seed(123442323)
 
-estimation_data_ids <- sample.int(nrow(trainData), 14000)
+estimation_data_ids <- sample.int(nrow(trainData), 12000)
 estimation_data <- trainData[estimation_data_ids, ]
 
 non_estimation_data <- setdiff(1:nrow(trainData),estimation_data_ids)
