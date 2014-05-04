@@ -34,9 +34,7 @@ colnames(submission4)[ncol(submission4)] <- "HOSPITALBILL"
 submission4 <- submission4[order(submission4$UID),]
 submission4["HOSPITALBILL"] <- apply(submission4, 1, function(row) ifelse(as.numeric(row["HOSPITALBILL"]) < 0, 0, as.numeric(row["HOSPITALBILL"])))
 
-#submission4[, "HOSPITALBILL"] <- apply(submission4, 1, function(row) ifelse(row["WARDTYPE"] == "", 280, as.numeric(row["HOSPITALBILL"])))
-
-write.csv(submission4, "Final_Submission_Aung_Myint_Thein.csv", quote=FALSE, row.names=FALSE)
+#write.csv(submission4, "Final_Submission_Aung_Myint_Thein.csv", quote=FALSE, row.names=FALSE)
 
 
 ############# testing for hosp type and bill cat

@@ -19,7 +19,7 @@ source("scripts/functions.R")
 #  }
 #}
 
-load("bills.Rdata")
+load("Rdata/bills.Rdata")
 
 bills[, "AGE"] <- 2014 - bills[, "YMDOB"]
 bills[, "AGEGROUP"] <- apply(bills, 1, function(row) get.age.group(as.numeric(row["AGE"])))
@@ -71,7 +71,7 @@ bills[, "AVEPERDAY"] <- apply(bills, 1, function(row) ifelse(as.numeric(row["isP
 #  }
 #}
 
-load("predict.Rdata")
+load("Rdata/predict.Rdata")
 
 #predict[, "AGE"] <- 2014 - as.numeric(substr(as.character(predict[, "YMDOB"]), 1, 4))
 predict[, "AGE"] <- 2014 - predict[, "YMDOB"]
@@ -268,7 +268,7 @@ qplot(factor(AGEGROUP), HOSPITALBILL, data=bills, geom=c("boxplot"),
 
 ## according to age group, we can see how the trend of the bills 
 LVGK <- ggplot(data=trainData[trainData$HOSPITALBILL<50000,], aes(x=AGE, y=logbill))
-LVGK + geom_point(aes( alpha = .1)) + facet_grid(.~ AGEGROUP) + geom_smooth(method="lm") +
+LVGK + geom_point(shape=20, alpha = .05) + facet_grid(.~ AGEGROUP) + geom_smooth(method="lm") +
   ylab("Log (HOSPITALBILL + 1)") + xlab("AGE") + labs(title = "Fig 5. Log transformed bills distribution across age") + theme_bw()
 
 LVGK + geom_point(shape = 1, alpha = .8) + facet_grid(.~ code) + geom_smooth(method="lm")
@@ -330,5 +330,6 @@ Hierarchical_Cluster <- hclust(Hierarchical_Cluster_distances, method="ward")
 plot(Hierarchical_Cluster, main = NULL, sub=NULL, labels = 1:nrow(trainData), xlab="Our Observations", cex.lab=1, cex.axis=1) 
 
 
-testtt <- bills
-
+LVGK <- ggplot(data=trainData[trainData$HOSPITALBILL<50000,], aes(x=AGE, y=logbill))
+LVGK + geom_boxplot() + facet_grid(.~ WARDTYPE) + geom_smooth(method="lm") +
+  ylab("Log (HOSPITALBILL + 1)") + xlab("AGE") + labs(title = "Fig 5. Log transformed bills distribution across age") + theme_bw()
