@@ -331,5 +331,10 @@ plot(Hierarchical_Cluster, main = NULL, sub=NULL, labels = 1:nrow(trainData), xl
 
 
 LVGK <- ggplot(data=trainData[trainData$HOSPITALBILL<50000,], aes(x=AGE, y=logbill))
-LVGK + geom_boxplot() + facet_grid(.~ WARDTYPE) + geom_smooth(method="lm") +
-  ylab("Log (HOSPITALBILL + 1)") + xlab("AGE") + labs(title = "Fig 5. Log transformed bills distribution across age") + theme_bw()
+LVGK + geom_point(shape=20, alpha = .03) + facet_grid(.~ AGEGROUP) + geom_smooth(method="lm") +
+  ylab("Log (HOSPITALBILL + 1)") + xlab("AGE") + theme_bw()
+
+
+p <- ggplot(data=trainData, aes(factor(BILLCAT), logbillb))
+p + geom_point(shape=20, alpha = .05) + facet_grid(.~ AGEGROUP) + geom_smooth(method="lm") +
+  ylab("Log (HOSPITALBILL + 1)") + xlab("BILLCAT") + labs(title = "Fig 6. Log transformed bills distribution across age by bill category") + theme_bw()
